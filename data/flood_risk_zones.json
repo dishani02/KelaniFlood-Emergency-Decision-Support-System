@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-10-23T09:00:00+05:30",
+  "source": "Kelani Basin downstream flood zones (Sample)",
+  "zones": [
+    {
+      "zone_id": "KLN-DS-01",
+      "name": "Kolonnawa (High Risk Zone)",
+      "risk_level": "HIGH",
+      "confidence": 0.90,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [79.880, 6.910],
+          [79.892, 6.915],
+          [79.905, 6.912],
+          [79.915, 6.920],
+          [79.918, 6.935],
+          [79.912, 6.942],
+          [79.898, 6.938],
+          [79.885, 6.930],
+          [79.878, 6.925],
+          [79.880, 6.910]
+        ]]
+      }
+    },
+    {
+      "zone_id": "KLN-DS-02",
+      "name": "Kelaniya (Medium Risk Zone)",
+      "risk_level": "MEDIUM",
+      "confidence": 0.75,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [79.910, 6.945],
+          [79.925, 6.950],
+          [79.935, 6.948],
+          [79.942, 6.955],
+          [79.940, 6.970],
+          [79.932, 6.975],
+          [79.920, 6.972],
+          [79.915, 6.960],
+          [79.910, 6.945]
+        ]]
+      }
+    }
+  ],
+  "reservoir": {"pre_spill": false, "eta_minutes": null}
+}

@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+shapely>=2.0
+pyproj
+networkx
+osmnx
+scikit-learn
+pytest
+httpx

@@ -1,0 +1,12 @@
+[
+  {"id": "S1", "name": "Gurukula College (Kelaniya)", "lat": 6.9750, "lon": 79.9150, "capacity": 500, "occupied": 120},
+  {"id": "S2", "name": "Sri Dharmaloka College (Kelaniya)", "lat": 6.9720, "lon": 79.9180, "capacity": 400, "occupied": 80},
+  {"id": "S3", "name": "Kelaniya Raja Maha Viharaya", "lat": 6.9600, "lon": 79.9200, "capacity": 300, "occupied": 50},
+  {"id": "S4", "name": "Obeysekarapura Community Hall (Kotte)", "lat": 6.9050, "lon": 79.8850, "capacity": 200, "occupied": 40},
+  {"id": "S5", "name": "Rajagiriya President College (Kotte)", "lat": 6.9150, "lon": 79.8950, "capacity": 350, "occupied": 60},
+  {"id": "S6", "name": "CMS College (Kotte)", "lat": 6.9100, "lon": 79.8800, "capacity": 250, "occupied": 30},
+  {"id": "S7", "name": "R. Premadasa Stadium (Colombo)", "lat": 6.9397, "lon": 79.8650, "capacity": 1000, "occupied": 150},
+  {"id": "S8", "name": "Moragasmulla Reading Hall (Kotte)", "lat": 6.8950, "lon": 79.8900, "capacity": 150, "occupied": 20},
+  {"id": "S9", "name": "Bandaranaikepura Community Hall (Kotte)", "lat": 6.8980, "lon": 79.8920, "capacity": 180, "occupied": 25},
+  {"id": "S10", "name": "H.K. Dharmadasa High School (Kelaniya)", "lat": 6.9780, "lon": 79.9100, "capacity": 300, "occupied": 45}
+]
