@@ -85,4 +85,19 @@ def accept_help(rid: str, responder: str):
     help_requests[rid].update(status="ACCEPTED", accepted_by=responder)
     return help_requests[rid]
 
+
+# Store the latest sensor data
+sensor_data = {"water_level_cm": 18.4, "rate_of_rise_cm_hr": 0.2, "rainfall_mm": 12.5}
+
+@app.post("/api/feed")
+def ingest_feed(feed: dict):
+    if "water_level_cm" in feed:
+        sensor_data.update(feed)
+        return {"status": "ok", "message": "Sensor data updated"}
+    raise HTTPException(status_code=422, detail="Invalid feed format")
+
+@app.get("/api/latest-sensor")
+def get_sensor_data():
+    return sensor_data
+
 app.mount("/", StaticFiles(directory=BASE / "web", html=True), name="web")

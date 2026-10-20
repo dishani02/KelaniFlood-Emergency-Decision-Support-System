@@ -7,6 +7,8 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
@@ -40,11 +42,13 @@
         }
         
         .loader-container { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .logo-mark { width: 240px; height: 72px; margin-bottom: 10px; position: relative; z-index: 2; }
+        .lw1 { animation: lwMove 2.5s linear infinite; }
+        .lw2 { animation: lwMove 4s linear infinite reverse; }
+        @keyframes lwMove { from { transform: translateX(0); } to { transform: translateX(-100px); } }
+        .lw3 { animation: lwMove 3.2s linear infinite; }
         .logo-text { font-size: 2.5rem; font-weight: 700; color: var(--text-dark); letter-spacing: -0.5px; position: relative; z-index: 2; margin-bottom: 20px; }
         .logo-text .kelani { color: var(--primary-blue); }
-        .wave-overlay { position: absolute; bottom: -5px; left: -5%; width: 110%; height: 20px; overflow: hidden; z-index: 1; opacity: 0.8; }
-        .wave-svg { width: 200%; height: 100%; fill: var(--primary-blue); animation: waveMove 3s linear infinite; }
-        @keyframes waveMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         .loading-bar-container { width: 180px; height: 3px; background: var(--primary-light); border-radius: 3px; overflow: hidden; margin-top: 10px; position: relative; z-index: 3; }
         .loading-bar { height: 100%; width: 0%; background: var(--primary-blue); animation: loadBar 3s forwards; }
         @keyframes loadBar { 0% { width: 0; } 100% { width: 100%; } }
@@ -139,12 +143,23 @@
             width: 100%; 
             height: 100%; 
             background: #e5e5e5; 
-            border-radius: 12px; 
+            border-radius: 0; 
             z-index: 1;
         }
 
-        /* Shelter Page (Professional Grid) */
-        .shelter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; max-width: 1300px; margin: 0 auto; width: 100%; }
+        /* Shelter Page */
+        .shelter-grid { display: block; max-width: 1300px; margin: 0 auto; width: 100%; }
+
+        /* Recommended shelter: separate highlighted section */
+        .rec-section {
+            background: linear-gradient(135deg, #e8f5e9, #e6f0fa);
+            border: 2px solid var(--safe);
+            border-radius: 18px; padding: 22px; margin-bottom: 35px;
+        }
+        .sec-title { font-size: .9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .rec-section .sec-title { color: var(--safe); }
+        .rec-section .shelter-item { max-width: 520px; }
+        .alt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
         
         .shelter-item { 
             background: var(--bg-white); border-radius: 12px; border: 1px solid var(--border-color); 
@@ -163,7 +178,7 @@
         .shelter-content { padding: 20px; flex: 1; display: flex; flex-direction: column; }
 
         .shelter-badge { position: absolute; top: 15px; right: 15px; font-size: 0.7rem; font-weight: 700; padding: 5px 10px; border-radius: 20px; text-transform: uppercase; z-index: 10; }
-        .badge-recommended { background: var(--primary-blue); color: white; }
+        .badge-recommended { background: var(--safe); color: white; }
         .badge-alt { background: var(--bg-grey); color: var(--text-muted); border: 1px solid var(--border-color); }
 
         .shelter-item h4 { color: var(--text-dark); font-size: 1.1rem; margin-bottom: 8px; }
@@ -188,75 +203,164 @@
             transition: all 0.2s; margin-top: auto;
         }
         .btn-navigate:hover { background: var(--safe); color: white; }
+        .btn-showmap {
+            width: 100%; padding: 10px; background: var(--primary-light); color: var(--primary-blue);
+            border: 1px solid var(--primary-blue); border-radius: 8px; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.2s; margin-top: auto; margin-bottom: 10px;
+        }
+        .btn-showmap:hover { background: var(--primary-blue); color: white; }
+        .btn-showmap + .btn-navigate { margin-top: 0; }
 
         .map-buttons { position: absolute; top: 30px; right: 30px; z-index: 400; display: flex; flex-direction: column; gap: 15px; }
 
-        /* Floating Alert Box on Map - Now Higher Up */
+        /* Alert box (now lives inside the left panel) */
         .map-alert {
-            position: absolute; bottom: 180px; left: 30px;
-            z-index: 400; display: none; padding: 20px 25px; border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); align-items: center; gap: 15px;
-            max-width: 400px;
+            position: static; display: none; padding: 20px 25px; border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12); align-items: center; gap: 15px;
+            max-width: 100%; margin-bottom: 16px;
         }
         .map-alert.active { display: flex; animation: slideIn 0.3s ease; }
         .map-alert h3 { font-size: 1.2rem; margin: 0; }
         .map-alert p { font-size: 0.95rem; margin: 0; line-height: 1.5; }
 
-        /* Custom Help Form Styles (Matched to Screenshot) */
-        .help-form-card {
-            background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #e0e0e0;
-            padding: 30px; max-width: 800px; margin: 0 auto; width: 100%;
-        }
-        .help-input {
-            width: 100%; padding: 12px 15px; border: 1px solid #d9e2ea; border-radius: 6px; 
-            font-size: 0.95rem; background: #f8f9fa; outline: none; font-family: 'Poppins', sans-serif;
-        }
-        .help-input:focus { border-color: var(--primary-blue); background: white; }
-        .help-label {
-            font-size: 0.9rem; font-weight: 600; color: #2c3e50; display: block; margin-bottom: 8px;
-        }
-        .location-box {
-            background: #eaf4f4; border-radius: 8px; padding: 15px 20px; 
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+        /* Legend (inside the left panel) */
+        .map-side-panel { width: 330px; flex: 0 0 330px; display: flex; flex-direction: column; justify-content: flex-end; gap: 14px; padding: 18px; background: #fff; border-right: 1px solid var(--border-color); overflow-y: auto; z-index: 2; }
+        .map-side-spacer { flex: 1 0 10px; }
+        .map-legend { background: #fff; border: 1px solid var(--border-color); border-radius: 10px; padding: 14px 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .lg-row { display: flex; align-items: center; gap: 10px; font-size: .8rem; color: #475569; margin-bottom: 6px; }
+        .lg-row i { display: inline-block; width: 26px; height: 0; flex-shrink: 0; }
+
+        /* =========================================
+           SAFE ROUTE CARD (on map) + route chips
+        ========================================= */
+        .route-dest { font-size: 0.8rem; color: var(--text-muted); margin: 4px 0 10px; }
+        .route-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
+        .route-stat { background: var(--bg-grey); border-radius: 8px; padding: 8px 6px; text-align: center; }
+        .route-stat .label { display: block; font-size: 0.62rem; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); }
+        .route-stat .value { font-size: 0.95rem; font-weight: 700; color: var(--primary-blue); }
+        .route-note { font-size: 0.78rem; line-height: 1.5; color: #475569; margin-top: 8px; }
+        .route-note.warn { color: #b45309; font-weight: 500; }
+        .route-note.bad { color: #b91c1c; font-weight: 600; }
+        .route-disclaimer { font-size: 0.68rem; color: var(--text-muted); border-top: 1px solid #eee; margin-top: 10px; padding-top: 8px; line-height: 1.45; }
+        .mode-toggle { display: flex; gap: 6px; margin-top: 10px; }
+        .mode-btn { flex: 1; padding: 8px 6px; border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; font-size: 0.82rem; font-weight: 600; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .mode-btn.active { background: var(--primary-blue); color: #fff; border-color: var(--primary-blue); }
+        .route-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; padding: 5px 10px; border-radius: 20px; margin-bottom: 14px; align-self: flex-start; }
+        .chip-safe { background: #dcfce7; color: #166534; }
+        .chip-caution { background: #fef9c3; color: #854d0e; }
+        .chip-danger { background: #fee2e2; color: #991b1b; }
+        .chip-warn { background: #f1f5f9; color: #475569; }
+
+
+        /* =========================================
+           LEFT PANEL (docked beside the map)
+        ========================================= */
+        #map-view.active { flex-direction: row; }
+        .map-area { flex: 1; position: relative; min-width: 0; height: 100%; }
+        .map-side-panel .map-alert { width: 100%; }
+        .route-panel { width: 400px; flex-shrink: 0; background: #fff; border-right: 1px solid var(--border-color); overflow-y: auto; padding: 22px 20px 28px; z-index: 500; box-shadow: 2px 0 14px rgba(0,0,0,0.06); }
+        .rp-header { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; }
+        .rp-header > i { font-size: 1.7rem; color: var(--primary-blue); }
+        .rp-header h3 { font-size: 1.05rem; color: var(--text-dark); line-height: 1.3; }
+        .rp-header p { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+        .rp-close { margin-left: auto; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.05rem; padding: 4px 6px; }
+        .rp-banner { display: flex; gap: 12px; align-items: flex-start; padding: 14px 15px; border-radius: 10px; margin-bottom: 12px; }
+        .rp-banner > i { font-size: 1.5rem; margin-top: 2px; }
+        .rp-banner strong { display: block; font-size: 0.97rem; }
+        .rp-banner span { display: block; font-size: 0.8rem; line-height: 1.5; margin-top: 3px; }
+        .rp-safe { background: #ecfdf5; color: #166534; border-left: 5px solid #1e9e55; }
+        .rp-caution { background: #fefce8; color: #854d0e; border-left: 5px solid #eab308; }
+        .rp-danger { background: #fef2f2; color: #991b1b; border-left: 5px solid #dc2626; }
+        .rp-info { background: #eff6ff; color: #1e40af; border-left: 5px solid #3b82f6; }
+        .rp-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin: 18px 0 8px; }
+        .rp-btn { width: 100%; margin-top: 8px; padding: 12px 18px; font-size: 0.9rem; }
+        .rp-option { width: 100%; display: flex; align-items: center; gap: 10px; text-align: left; padding: 10px 12px; margin-bottom: 8px; background: #fff; border: 1px solid #dbe3ea; border-radius: 10px; cursor: pointer; transition: all .15s; }
+        .rp-option:hover { background: var(--bg-grey); }
+        .rp-option.selected { border: 2px solid var(--primary-blue); background: var(--primary-light); padding: 9px 11px; }
+        .rp-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+        .dot-safe { background: #1e9e55; } .dot-caution { background: #eab308; } .dot-danger { background: #dc2626; }
+        .rp-opt-main { flex: 1; min-width: 0; }
+        .rp-opt-main b { display: block; font-size: 0.86rem; color: var(--text-dark); }
+        .rp-opt-main small { font-size: 0.74rem; color: var(--text-muted); }
+        .rp-tag { font-size: 0.66rem; font-weight: 700; padding: 3px 8px; border-radius: 12px; text-transform: uppercase; }
+        .tag-safe { background: #dcfce7; color: #166534; } .tag-caution { background: #fef9c3; color: #854d0e; } .tag-danger { background: #fee2e2; color: #991b1b; }
+        .rp-steps { margin-top: 6px; }
+        .rp-steps summary { cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--primary-blue); padding: 6px 0; }
+        .rp-step { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.82rem; color: #334155; line-height: 1.4; }
+        .rp-step i { width: 18px; text-align: center; color: var(--primary-blue); margin-top: 2px; }
+        .rp-step small { margin-left: auto; color: var(--text-muted); white-space: nowrap; }
+        .rp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+        .rp-chip-btn { padding: 6px 11px; border-radius: 16px; border: 1px solid #cbd5e1; background: #fff; font-size: 0.76rem; font-weight: 600; color: #475569; cursor: pointer; }
+        .rp-chip-btn:hover { background: var(--primary-light); }
+        .ov-route-row { display: flex; justify-content: space-between; gap: 10px; font-size: 0.9rem; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+        .ov-route-row:last-of-type { border-bottom: none; }
+        @media (max-width: 800px) {
+            #map-view.active { flex-direction: column; }
+            .map-side-panel { width: 100%; flex: 0 0 auto; max-height: 42%; border-right: none; border-bottom: 1px solid var(--border-color); padding: 12px; gap: 10px; }
+            .map-side-spacer { display: none; }
+            .route-panel { width: 100%; max-height: 46%; border-right: none; border-bottom: 1px solid var(--border-color); }
+            .map-area { flex: 1; min-height: 0; }
+            .map-buttons { top: auto; bottom: 20px; right: 10px; }
         }
 
-        /* Responder Table Styles */
-        .responder-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .responder-table th { padding: 15px 10px; font-weight: 600; color: #2c3e50; font-size: 0.85rem; text-transform: uppercase; border-bottom: 1px solid #eaeded; }
-        .responder-table td { padding: 15px 10px; font-size: 0.95rem; border-bottom: 1px solid #eaeded; color: #555; }
-        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: white; letter-spacing: 0.5px; }
-        .badge-open { background-color: #e74c3c; }
-        .badge-accepted { background-color: #27ae60; }
-        
-        .responder-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 15px; animation: slideIn 0.3s ease; }
+        /* =========================================
+           "YOU ARE SAFE" POPUP (blurred background)
+        ========================================= */
+        .safe-modal {
+            position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+            background: rgba(15,42,67,.35); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 5000;
+        }
+        .safe-modal.show { display: flex; animation: fadeIn .3s ease; }
+        .safe-box {
+            background: #fff; border-radius: 20px; padding: 40px 45px; max-width: 440px; width: 90%;
+            text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,.25); border-top: 6px solid var(--safe);
+        }
+        .safe-ico {
+            width: 84px; height: 84px; margin: 0 auto 18px; border-radius: 50%; background: var(--safe-bg);
+            display: flex; align-items: center; justify-content: center; font-size: 2.6rem; color: var(--safe);
+        }
+        .safe-box h3 { color: var(--safe); font-size: 1.6rem; margin-bottom: 10px; }
+        .safe-box p { color: var(--text-muted); line-height: 1.7; margin-bottom: 26px; }
 
-        /* Response cards: left-aligned, compact and urgency-coloured */
-        .responses-wrap { width: 100%; max-width: 1120px; margin: 0; }
-        .responses-toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; margin-bottom:22px; }
-        .responses-heading { color:#183b5b; font-size:1.55rem; font-weight:700; margin:0; }
-        .urgency-filter { min-width:210px; padding:11px 14px; border:1px solid #cbd5e1; border-radius:9px; background:#fff; color:#243b53; font-size:.95rem; font-weight:500; outline:none; }
-        .urgency-filter:focus { border-color:#0056b3; box-shadow:0 0 0 3px rgba(0,86,179,.12); }
-        .response-cards { display:flex; flex-direction:column; align-items:flex-start; gap:15px; width:100%; }
-        .responder-card { width:100%; max-width:900px; background:#fff; border:1px solid #e3eaf0; border-left:6px solid #94a3b8; border-radius:12px; padding:22px 24px; box-shadow:0 4px 14px rgba(28,48,68,.06); animation:slideIn .25s ease; }
-        .responder-card.urgency-high { border-left-color:#dc2626; }
-        .responder-card.urgency-medium { border-left-color:#ea8a0a; }
-        .responder-card.urgency-low { border-left-color:#16a34a; }
-        .response-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:15px; }
-        .response-type { font-size:1.28rem; line-height:1.45; font-weight:700; margin:0 0 9px; }
-        .urgency-text-high { color:#b91c1c; }
-        .urgency-text-medium { color:#b45309; }
-        .urgency-text-low { color:#15803d; }
-        .urgency-pill { display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:20px; font-size:.82rem; font-weight:700; white-space:nowrap; }
-        .urgency-pill-high { background:#fee2e2; color:#991b1b; }
-        .urgency-pill-medium { background:#ffedd5; color:#9a3412; }
-        .urgency-pill-low { background:#dcfce7; color:#166534; }
-        .response-description { color:#334155; font-size:.98rem; line-height:1.65; margin:12px 0; overflow-wrap:anywhere; }
-        .response-meta { display:flex; flex-wrap:wrap; gap:10px 18px; color:#64748b; font-size:.83rem; }
-        .response-actions { margin-top:18px; display:flex; gap:10px; align-items:center; }
-        .responder-name-input { flex:1; min-width:0; padding:11px 13px; border:1px solid #cbd5e1; border-radius:8px; font-size:.9rem; background:#f8fafc; }
-        .accepted-note { margin-top:14px; padding:10px 12px; background:#ecfdf5; color:#166534; border-radius:8px; font-size:.9rem; font-weight:600; }
-        .response-empty { width:100%; max-width:900px; padding:28px; background:#fff; border:1px dashed #cbd5e1; border-radius:12px; color:#64748b; text-align:left; }
-        @media (max-width:600px) { .response-card-top { flex-direction:column; } .response-actions { flex-direction:column; align-items:stretch; } .responder-name-input { width:100%; } .responder-card { padding:18px; } }
+        /* =========================================
+           SAFE ROUTE ANALYSIS TAB
+        ========================================= */
+        .sr-wrap { width: 100%; max-width: 1100px; margin: 0 auto; flex-shrink: 0; padding-bottom: 40px; }
+        .sr-header h2 { font-size: 1.6rem; color: #183b5b; font-weight: 700; }
+        .sr-header p { color: #64748b; font-size: .95rem; margin: 6px 0 22px; line-height: 1.6; max-width: none; }
+        .sr-card { margin-bottom: 24px; flex-shrink: 0; }
+        .sr-btnrow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+        .sr-btn { padding: 9px 14px; font-size: .85rem; border-radius: 8px; }
+        .sr-label { font-size: .8rem; font-weight: 600; color: #475569; margin-right: 2px; }
+        .sr-mode { display: inline-flex; gap: 6px; margin-left: auto; }
+        .sr-mode .mode-btn { flex: none; padding: 8px 14px; }
+        #sr-map { height: 380px; border-radius: 12px; border: 1px solid var(--border-color); background: #e5e5e5; z-index: 1; }
+        .sr-legend { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: .78rem; color: #475569; margin: 12px 0 4px; }
+        .sr-legend i { display: inline-block; width: 24px; height: 0; vertical-align: middle; margin-right: 6px; }
+        .sr-status { margin: 16px 0 4px; font-size: .92rem; color: #475569; }
+        .sr-table { width: 100%; border-collapse: collapse; font-size: .88rem; margin-top: 12px; }
+        .sr-table th { text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .6px; color: #64748b; padding: 10px 10px; border-bottom: 2px solid var(--border-color); }
+        .sr-table td { padding: 11px 10px; border-bottom: 1px solid var(--border-color); color: #334155; }
+        .sr-table tr.sr-best td { background: #f0fdf4; font-weight: 600; }
+        .sr-scroll { overflow-x: auto; }
+        .sr-headline { margin-top: 14px; padding: 13px 16px; border-radius: 10px; font-size: .92rem; line-height: 1.6; font-weight: 500; }
+        .sr-headline.good { background: #dcfce7; color: #166534; }
+        .sr-headline.mid { background: #fef9c3; color: #854d0e; }
+        .sr-headline.bad { background: #fee2e2; color: #991b1b; }
+        .sr-headline.info { background: var(--primary-light); color: #0b3d75; }
+        .v-bad { color: #dc2626; font-weight: 700; }
+        .v-good { color: #16a34a; font-weight: 700; }
+        .v-mid { color: #b45309; font-weight: 700; }
+        .sr-sumgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 16px 0; }
+        .sr-sum { background: var(--bg-grey); border-radius: 10px; padding: 14px; text-align: center; }
+        .sr-sum .label { display: block; font-size: .68rem; text-transform: uppercase; letter-spacing: .5px; color: #64748b; margin-bottom: 4px; }
+        .sr-sum .value { font-size: 1.3rem; font-weight: 700; color: var(--primary-blue); }
+        .sr-progress { height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden; margin: 10px 0 4px; display: none; }
+        .sr-progress div { height: 100%; width: 0; background: var(--primary-blue); transition: width .3s; }
+        .sr-select { padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-size: .85rem; color: #243b53; }
+        .sr-note { font-size: .78rem; color: #64748b; line-height: 1.6; margin-top: 8px; }
+        @media (max-width: 700px) { .sr-mode { margin-left: 0; } #sr-map { height: 300px; } }
 
     </style>
 </head>
@@ -265,13 +369,24 @@
     <!-- 1. LOADER -->
     <div id="loader">
         <div class="loader-container">
+            <svg class="logo-mark" viewBox="0 0 200 60">
+                <defs>
+                    <linearGradient id="wf" x1="0" x2="1" y1="0" y2="0">
+                        <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+                        <stop offset=".18" stop-color="#fff" stop-opacity="1"/>
+                        <stop offset=".82" stop-color="#fff" stop-opacity="1"/>
+                        <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+                    </linearGradient>
+                    <mask id="wm" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="60"><rect width="200" height="60" fill="url(#wf)"/></mask>
+                </defs>
+                <g mask="url(#wm)" fill="none" stroke="#0056b3" stroke-linecap="round">
+                    <g class="lw lw2"><path d="M-100,20 Q-75,2 -50,20 T0,20 T50,20 T100,20 T150,20 T200,20 T250,20 T300,20" stroke-width="4" opacity=".35"/></g>
+                    <g class="lw lw1"><path d="M-100,32 Q-75,14 -50,32 T0,32 T50,32 T100,32 T150,32 T200,32 T250,32 T300,32" stroke-width="5" opacity=".7"/></g>
+                    <g class="lw lw3"><path d="M-100,44 Q-75,26 -50,44 T0,44 T50,44 T100,44 T150,44 T200,44 T250,44 T300,44" stroke-width="6"/></g>
+                </g>
+            </svg>
             <div class="logo-text">
                 <span class="kelani">Kelani</span>Flood
-                <div class="wave-overlay">
-                    <svg class="wave-svg" viewBox="0 0 800 50" preserveAspectRatio="none">
-                        <path d="M0,25 C150,50 250,0 400,25 C550,50 650,0 800,25 L800,50 L0,50 Z"></path>
-                    </svg>
-                </div>
             </div>
             <div class="loading-bar-container">
                 <div class="loading-bar"></div>
@@ -291,8 +406,7 @@
                 <a class="nav-link active" onclick="switchPage('overview')">Overview</a>
                 <a class="nav-link" onclick="switchPage('map-view')">Live Map</a>
                 <a class="nav-link" onclick="switchPage('shelters')">Shelters</a>
-                <a class="nav-link" onclick="switchPage('help')">Help Request</a>
-                <a class="nav-link" onclick="switchPage('responses')">Responses</a>
+                <a class="nav-link" onclick="switchPage('saferoute')">Safe Route</a>
             </div>
 
             <div class="nav-profile">
@@ -319,6 +433,8 @@
                             </div>
                         </div>
                         
+                        <div id="overview-route" class="card" style="display:none; margin-bottom: 30px;"></div>
+
                         <div id="overview-alert" class="alert-card">
                             <div class="alert-icon" id="alert-icon"><i class="fa-solid fa-circle-info"></i></div>
                             <div class="alert-content">
@@ -335,6 +451,7 @@
                             <div style="display: flex; flex-direction: column; gap: 15px;">
                                 <button class="btn btn-primary" onclick="useGps()" id="gps-btn"><i class="fa-solid fa-location-dot"></i> Use My GPS Location</button>
                                 <button class="btn btn-outline" onclick="switchPage('map-view')"><i class="fa-solid fa-map"></i> Open Live Map View</button>
+                                <button class="btn btn-outline" onclick="switchPage('saferoute')"><i class="fa-solid fa-route"></i> Safe Route Analysis</button>
                             </div>
                         </div>
 
@@ -353,39 +470,32 @@
 
             <!-- PAGE 2: MAP -->
             <div id="map-view" class="page" style="padding: 0; position: relative;">
-                <div id="map"></div>
-                
-                <!-- Floating Alert Box on Map (Bottom Left) -->
-                <div id="map-alert" class="map-alert">
-                    <div id="map-alert-icon" style="font-size: 1.8rem;"></div>
-                    <div>
-                        <h3 id="map-alert-title">STATUS</h3>
-                        <p id="map-alert-message">Message</p>
+                <aside class="map-side-panel">
+                    <div class="map-side-spacer"></div>
+                    <div id="map-alert" class="map-alert">
+                        <div id="map-alert-icon" style="font-size: 1.8rem;"></div>
+                        <div>
+                            <h3 id="map-alert-title">ADVISORY</h3>
+                            <p id="map-alert-message">Select your location on the map or use GPS to view your flood-risk advisory.</p>
+                        </div>
                     </div>
-                </div>
-
-                <div class="map-buttons">
-                    <button class="btn btn-primary" onclick="useGps()"><i class="fa-solid fa-location-dot"></i> Use My GPS</button>
-                    <button class="btn btn-outline" style="background: white;" onclick="findShelter()"><i class="fa-solid fa-house-chimney"></i> Find Nearest suitable shelter</button>
-                </div>
-
-                <!-- Legend for Map -->
-                <div style="position: absolute; bottom: 30px; left: 30px; background: white; padding: 10px 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 400; font-size: 0.8rem;">
-                    <div style="font-weight: 600; margin-bottom: 5px;">Map Legend</div>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                        <div style="width: 20px; height: 0; border-top: 3px dashed #e74c3c;"></div> 
-                        <span>Straight line crosses a flood zone</span>
+                    <div class="map-legend">
+                        <div class="rp-title" style="margin-top:0">Map Legend</div>
+                        <div class="lg-row"><i style="border-top:5px solid #1e9e55"></i> Safe road route (outside flood zones)</div>
+                        <div class="lg-row"><i style="border-top:5px solid #dc2626"></i> Route section inside a flood zone</div>
+                        <div class="lg-row"><i style="border-top:3px dashed #94a3b8"></i> Other routes (less safe)</div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                        <div style="width: 20px; height: 0; border-top: 3px dashed #27ae60;"></div> 
-                        <span>Straight line does not cross a flood zone</span>
-                    </div>
-                    <div style="margin-top: 8px; font-size: 0.7rem; color: var(--text-muted); border-top: 1px solid #eee; padding-top: 5px;">
-                        Road-network routing is planned (next stage).
+                </aside>
+                <div class="map-area">
+                    <div id="map"></div>
+                    <div class="map-buttons">
+                        <button class="btn btn-primary" onclick="useGps()"><i class="fa-solid fa-location-dot"></i> Use My GPS</button>
+                        <button class="btn btn-outline" style="background: white;" onclick="findShelter()"><i class="fa-solid fa-house-chimney"></i> Find Nearest suitable shelter</button>
                     </div>
                 </div>
             </div>
 
+            
             <!-- PAGE 3: SHELTERS -->
             <div id="shelters" class="page">
                 <div class="shelter-grid" id="shelter-list">
@@ -397,114 +507,65 @@
                 </div>
             </div>
 
-            <!-- PAGE 4: HELP REQUEST (Matched to Screenshot) -->
-            <div id="help" class="page" style="background: #f4f7f9; padding: 40px; justify-content: center;">
-                
-                <div class="help-form-card">
-                    
-                    <h2 style="font-size: 1.4rem; color: #2c3e50; margin-bottom: 20px; font-weight: 600;">Request Emergency Help</h2>
+            <!-- PAGE 4: SAFE ROUTE ANALYSIS -->
+            <div id="saferoute" class="page" style="background:#f4f7f9;">
+                <div class="sr-wrap">
 
-                    <!-- 1. Location Box -->
-                    <div class="location-box">
-                        <div>
-                            <div style="font-weight: 600; color: #2c3e50; font-size: 0.95rem;">Your location</div>
-                            <div id="locStatusText" style="color: #5b6b7a; font-size: 0.85rem;">Could not detect your location. Describe where you are below.</div>
-                        </div>
-                        <button class="btn btn-outline" style="padding: 8px 15px; font-size: 0.85rem; border-width: 1px;" onclick="useGps()">Change location</button>
+                    <div class="sr-header">
+                        <h2>Safe Route Analysis</h2>
+                        <p>KelaniFlood does not just draw the shortest path to a shelter. It checks real road routes against the flood-risk zones and chooses the route with the least flood exposure. This page compares the recommended safe route with the shortest road route for selected scenarios.</p>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 20px;">
-                        
-                        <!-- 2. Where Are You -->
-                        <div>
-                            <label class="help-label">Where are you? (village, road or landmark)</label>
-                            <input type="text" id="helpLocationText" placeholder="e.g. Near the bus stand, Main Street" class="help-input">
-                        </div>
-
-                        <!-- 3. Help Type & Urgency -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div>
-                                <label class="help-label">Help type</label>
-                                <select id="helpType" class="help-input" style="cursor: pointer;">
-                                    <option value="SOS">SOS</option>
-                                    <option value="Rescue">Rescue</option>
-                                    <option value="Food">Food</option>
-                                    <option value="Medicine">Medicine</option>
-                                    <option value="Evacuation">Evacuation</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="help-label">Urgency</label>
-                                <select id="helpUrgency" class="help-input" style="cursor: pointer;">
-                                    <option value="High">High</option>
-                                    <option value="Medium" selected>Medium</option>
-                                    <option value="Low">Low</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- 4. Name & Contact Number -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div>
-                                <label class="help-label">Your name</label>
-                                <input type="text" id="helpName" placeholder="Full name" class="help-input">
-                            </div>
-                            <div>
-                                <label class="help-label">Contact number</label>
-                                <input type="text" id="helpContact" placeholder="07X XXX XXXX" class="help-input">
-                            </div>
-                        </div>
-
-                        <!-- 5. Description -->
-                        <div>
-                            <label class="help-label">Description</label>
-                            <textarea id="helpDescription" rows="4" placeholder="e.g. 3 people trapped on the first floor" class="help-input" style="resize: vertical;"></textarea>
-                        </div>
-
-                        <!-- 6. Submit Button -->
-                        <div>
-                            <button class="btn btn-primary" style="background: #1e3a5f; padding: 12px 25px; font-size: 0.95rem; border-radius: 6px; font-weight: 600; width: auto; box-shadow: none;" onclick="submitHelp()">
-                                Send help request
-                            </button>
-                        </div>
-
-                        <!-- Status Message -->
-                        <div id="helpStatus" style="font-weight: 600; font-size: 0.9rem;"></div>
-
+                    <!-- ROUTE TO NEAREST SHELTER (moved from Live Map) -->
+                    <div class="card sr-card">
+                        <div class="card-title"><i class="fa-solid fa-route"></i> Your safe route to the nearest shelter</div>
+                        <div id="rp-body"></div>
                     </div>
-                </div>
-            </div>
 
-            <!-- PAGE 5: RESPONSES (Urgency-filtered request cards) -->
-            <div id="responses" class="page" style="background:#f4f7f9; padding:30px; align-items:flex-start;">
-                <div class="responses-wrap">
-                    <div class="responses-toolbar">
-                        <div>
-                            <h2 class="responses-heading">Help Requests</h2>
-                            <p style="color:#64748b; font-size:.92rem; margin-top:5px;">Review incoming requests and accept requests that your team can handle.</p>
+                    <!-- 1. COMPARISON -->
+                    <div class="card sr-card">
+                        <div class="card-title"><i class="fa-solid fa-code-compare"></i> 1. Route comparison (live demo)</div>
+                        <div class="sr-btnrow">
+                            <span class="sr-label">Scenario:</span>
+                            <button class="btn btn-outline sr-btn" onclick="runScenario(0)">Inside High Risk</button>
+                            <button class="btn btn-outline sr-btn" onclick="runScenario(1)">Near High Risk</button>
+                            <button class="btn btn-outline sr-btn" onclick="runScenario(2)">Inside Medium Risk</button>
+                            <button class="btn btn-outline sr-btn" onclick="runScenario(3)">Safe Zone</button>
+                            <span class="sr-mode">
+                                <button class="mode-btn active" id="sr-mode-walk" onclick="setSrMode('walk')"><i class="fa-solid fa-person-walking"></i> Walk</button>
+                                <button class="mode-btn" id="sr-mode-drive" onclick="setSrMode('drive')"><i class="fa-solid fa-car"></i> Drive</button>
+                            </span>
                         </div>
-                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                            <label for="urgencyFilter" style="font-weight:600; color:#334155; font-size:.92rem;">Filter by urgency</label>
-                            <select id="urgencyFilter" class="urgency-filter" onchange="renderHelpRequestCards()">
-                                <option value="ALL">All urgencies</option>
-                                <option value="HIGH">High urgency</option>
-                                <option value="MEDIUM">Medium urgency</option>
-                                <option value="LOW">Low urgency</option>
-                            </select>
+                        <div class="sr-note" style="margin:-4px 0 12px;">Or click anywhere on the map below to use that point as the starting location. The destination is the shelter recommended by the system.</div>
+                        <div id="sr-map"></div>
+                        <div class="sr-legend">
+                            <span><i style="border-top:3px dashed #64748b"></i>Straight line (not a road)</span>
+                            <span><i style="border-top:7px solid #2563eb"></i>Shortest road route</span>
+                            <span><i style="border-top:4px solid #1e9e55"></i>KelaniFlood safe route</span>
+                            <span><i style="border-top:4px solid #dc2626"></i>Part inside a flood zone</span>
                         </div>
+                        <div id="sr-results"><div class="sr-status">Pick a scenario above to compare the routes.</div></div>
                     </div>
-                    <div id="responder-details-container" class="response-cards">
-                        <div class="response-empty"><i class="fa-solid fa-spinner fa-spin"></i> Loading help requests...</div>
-                    </div>
+
                 </div>
             </div>
 
         </div>
     </div>
 
+    <!-- "You are Safe" popup -->
+    <div id="safe-modal" class="safe-modal" onclick="closeSafeModal()">
+        <div class="safe-box" onclick="event.stopPropagation()">
+            <div class="safe-ico"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3>You are Safe</h3>
+            <p id="safe-modal-msg"></p>
+            <button class="btn btn-primary" onclick="closeSafeModal()">OK</button>
+        </div>
+    </div>
+
     <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script>if (typeof L === 'undefined') { document.write('<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>'); }</script>
     <script>
         // --- 1. LOADER LOGIC ---
         setTimeout(() => {
@@ -513,6 +574,7 @@
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('dashboard').classList.add('show');
                 initMap();
+                renderRoutePanel('idle');
             }, 800); 
         }, 3000);
 
@@ -530,54 +592,100 @@
                 setTimeout(() => map.invalidateSize(), 100);
             }
             
-            // Load Responses when switching to Responses View
-            if (pageId === 'responses') {
-                loadHelpRequests();
+            // Safe Route tab: create / resize its comparison map
+            if (pageId === 'saferoute') {
+                initMap2();
+                setTimeout(() => map2 && map2.invalidateSize(), 150);
             }
         }
+
+        // --- "You are Safe" popup ---
+        function showSafeModal(msg) {
+            document.getElementById('safe-modal-msg').innerText = msg || 'You are in a safe zone. No shelter recommendation is needed at this moment.';
+            document.getElementById('safe-modal').classList.add('show');
+        }
+        function closeSafeModal() { document.getElementById('safe-modal').classList.remove('show'); }
 
         // --- 3. MAP & API LOGIC ---
         let map, userMarker = null, routeLayers = [];
         let watchId = null; 
         const COLORS = { HIGH: '#e74c3c', MEDIUM: '#f39c12', LOW: '#f1c40f' };
 
+        function showMapError(msg) {
+            const m = document.getElementById('map');
+            if (m) m.innerHTML = '<div style="padding:30px;color:#b91c1c;font-weight:500;line-height:1.6;">' + msg + '</div>';
+        }
+
         function initMap() {
             if (map) return;
-            map = L.map('map').setView([6.94, 79.89], 13);
-            
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
+            if (typeof L === 'undefined') {
+                showMapError('Map library (Leaflet) could not be loaded. Check your internet connection and refresh the page.');
+                return;
+            }
+            try {
+                map = L.map('map', { zoomControl: false }).setView([6.94, 79.89], 13);
+                L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-            map.whenReady(() => {
-                map.invalidateSize();
-                loadZones();
-                loadShelterDots(); 
-            });
+                const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
+                });
+                // Backup basemap: used automatically if OpenStreetMap blocks the tiles
+                // (happens when the page is opened as a local file, with no Referer header)
+                const carto = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 19, subdomains: 'abcd',
+                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+                });
+                let tileErrors = 0, switched = false;
+                osm.on('tileerror', () => {
+                    if (!switched && ++tileErrors >= 4) {
+                        switched = true;
+                        map.removeLayer(osm);
+                        carto.addTo(map);
+                    }
+                });
+                osm.addTo(map);
 
-            map.on('click', e => setLocation(e.latlng.lat, e.latlng.lng));
+                map.whenReady(() => {
+                    map.invalidateSize();
+                    zonesReady = loadZones();
+                    loadShelterDots();
+                });
+
+                map.on('click', e => setLocation(e.latlng.lat, e.latlng.lng));
+                window.addEventListener('resize', () => map && map.invalidateSize());
+                setTimeout(() => map && map.invalidateSize(), 400);
+            } catch (err) {
+                console.error('Map init failed:', err);
+                showMapError('Map failed to start: ' + err.message);
+            }
         }
 
         // --- 4. FETCH ALL SHELTERS AS DOTS ---
-        async function loadShelterDots() {
-            try {
-                const res = await fetch('/api/shelters'); 
-                const shelters = await res.json();
-
-                shelters.forEach(s => {
-                    L.circleMarker([s.lat, s.lon], {
-                        radius: 8,
-                        fillColor: "#27ae60",
-                        color: "#ffffff",
-                        weight: 2,
-                        opacity: 1,
-                        fillOpacity: 0.8
-                    }).addTo(map).bindPopup(`<b>${s.name}</b><br>Capacity: ${s.capacity}`);
-                });
-
-            } catch (err) {
-                console.error("Error loading shelter dots: ", err);
+        let allShelters = [], sheltersFetch = null;
+        function fetchShelters() {
+            if (!sheltersFetch) {
+                sheltersFetch = (async () => {
+                    try {
+                        const r = await fetch('/api/shelters');
+                        const j = await r.json();
+                        allShelters = Array.isArray(j) ? j : [];
+                    } catch (err) {
+                        console.error('Error loading shelters:', err);
+                        sheltersFetch = null;
+                    }
+                })();
             }
+            return sheltersFetch;
+        }
+
+        async function loadShelterDots() {
+            await fetchShelters();
+            allShelters.forEach(s => {
+                L.circleMarker([s.lat, s.lon], {
+                    radius: 8, fillColor: "#27ae60", color: "#ffffff",
+                    weight: 2, opacity: 1, fillOpacity: 0.8
+                }).addTo(map).bindPopup(`<b>${safeText(s.name)}</b><br>Capacity: ${s.capacity}`);
+            });
         }
 
         async function post(url, body) {
@@ -597,11 +705,35 @@
             }
         }
 
+        // Flood zones are kept in memory so routes can be checked against them
+        let floodZones = [], zonesFetch = null;
+        let zonesReady = Promise.resolve();
+
+        function fetchZonesData() {
+            if (!zonesFetch) {
+                zonesFetch = (async () => {
+                    try {
+                        const feed = await (await fetch('/api/zones')).json();
+                        floodZones = feed.zones.map(z => ({
+                            name: z.name,
+                            risk: String(z.risk_level || 'LOW').toUpperCase(),
+                            polys: polysOf(z.geometry),
+                            geometry: z.geometry
+                        }));
+                    } catch (err) {
+                        console.error('Error loading zones:', err);
+                        zonesFetch = null;
+                    }
+                })();
+            }
+            return zonesFetch;
+        }
+
         async function loadZones() {
-            const feed = await (await fetch('/api/zones')).json();
-            feed.zones.forEach(z => {
-                L.geoJSON(z.geometry, { style: { color: COLORS[z.risk_level], weight: 2, fillOpacity: 0.2 } })
-                 .bindPopup(`<b>${z.name}</b><br>Risk: ${z.risk_level}`).addTo(map);
+            await fetchZonesData();
+            floodZones.forEach(z => {
+                L.geoJSON(z.geometry, { style: { color: COLORS[z.risk] || COLORS.LOW, weight: 2, fillOpacity: 0.2 } })
+                 .bindPopup(`<b>${safeText(z.name)}</b><br>Risk: ${z.risk}`).addTo(map);
             });
         }
 
@@ -609,8 +741,9 @@
             if (!map) return;
             
             if (userMarker) map.removeLayer(userMarker);
-            routeLayers.forEach(l => map.removeLayer(l));
-            routeLayers = [];
+            clearRouteLayers();
+            hideRouteCard();
+            lastDest = null;
             
             userMarker = L.marker([lat, lon]).addTo(map);
             
@@ -634,7 +767,7 @@
                 mapAlert.style.color = '#f39c12';
                 mapAlert.style.borderLeft = '5px solid #f39c12';
             } else if (a.severity === 'SAFE') {
-                mapAlertIcon.innerHTML = '<i class="fa-solid fa-shield-check"></i>';
+                mapAlertIcon.innerHTML = '<i class="fa-solid fa-shield-halved"></i>';
                 mapAlert.style.background = '#eafaf1';
                 mapAlert.style.color = '#27ae60';
                 mapAlert.style.borderLeft = '5px solid #27ae60';
@@ -720,14 +853,507 @@
             return '<div class="facility-icon" title="Toilets"><i class="fa-solid fa-restroom"></i></div>';
         }
 
+        /* =====================================================================
+           SAFE ROUTING  (real roads, avoids flood zones)
+           ---------------------------------------------------------------------
+           1. Ask OSRM for the normal route + alternatives.
+           2. Check every route against the flood-zone polygons.
+           3. If none is clear, try detour via-points (left/right of the straight
+              line) and check those routes too.
+           4. Pick the route with the least flood exposure (then the fastest).
+        ===================================================================== */
+        const RISK_W = { HIGH: 3, MEDIUM: 1.5, LOW: 0.5 };
+        const RISK_COLOR = { HIGH: '#dc2626', MEDIUM: '#f97316', LOW: '#eab308' };
+        const ROUTE_OK_COLOR = '#1e9e55';
+        let lastDest = null, routeMode = 'walk', routeReqId = 0;
+        let shelterTargets = [];          // shelters from the last search (for buttons)
+        let lastRouteResult = null;
+        let routeState = null;            // { result, dest, selected } of the route shown in the panel
+
+        // ---------- geometry helpers ----------
+        function polysOf(geom) {
+            if (!geom) return [];
+            switch (geom.type) {
+                case 'Feature': return polysOf(geom.geometry);
+                case 'FeatureCollection': return geom.features.flatMap(f => polysOf(f.geometry));
+                case 'Polygon': return [geom.coordinates];
+                case 'MultiPolygon': return geom.coordinates;
+                case 'GeometryCollection': return geom.geometries.flatMap(polysOf);
+                default: return [];
+            }
+        }
+        function ringContains(ring, x, y) {
+            let inside = false;
+            for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+                const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+                if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
+            }
+            return inside;
+        }
+        function polyContains(poly, x, y) {
+            if (!ringContains(poly[0], x, y)) return false;
+            for (let k = 1; k < poly.length; k++) if (ringContains(poly[k], x, y)) return false;
+            return true;
+        }
+        // returns the highest-risk zone that contains the point (or null)
+        function zoneAt(lon, lat) {
+            let best = null;
+            for (const z of floodZones) {
+                for (const p of z.polys) {
+                    if (polyContains(p, lon, lat)) {
+                        if (!best || (RISK_W[z.risk] || 0) > (RISK_W[best.risk] || 0)) best = z;
+                        break;
+                    }
+                }
+            }
+            return best;
+        }
+        function haversine(a, b) { // a,b = [lon,lat] -> metres
+            const R = 6371000, rad = Math.PI / 180;
+            const dLat = (b[1] - a[1]) * rad, dLon = (b[0] - a[0]) * rad;
+            const s = Math.sin(dLat / 2) ** 2 + Math.cos(a[1] * rad) * Math.cos(b[1] * rad) * Math.sin(dLon / 2) ** 2;
+            return 2 * R * Math.asin(Math.sqrt(s));
+        }
+        function densify(coords, step = 40) {
+            const out = [coords[0]];
+            for (let i = 1; i < coords.length; i++) {
+                const a = coords[i - 1], b = coords[i];
+                const n = Math.max(1, Math.ceil(haversine(a, b) / step));
+                for (let k = 1; k <= n; k++) out.push([a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n]);
+            }
+            return out;
+        }
+        function evaluateRoute(route) {
+            const pts = densify(route.geometry.coordinates);
+            const flags = [null];
+            const m = { HIGH: 0, MEDIUM: 0, LOW: 0 };
+            let exposure = 0;
+            for (let i = 1; i < pts.length; i++) {
+                const z = zoneAt(pts[i][0], pts[i][1]);
+                flags.push(z ? z.risk : null);
+                if (z) {
+                    const seg = haversine(pts[i - 1], pts[i]);
+                    if (m[z.risk] !== undefined) m[z.risk] += seg;
+                    exposure += seg * (RISK_W[z.risk] || 0.5);
+                }
+            }
+            const startZone = pts.length ? zoneAt(pts[0][0], pts[0][1]) : null;
+            return { pts, flags, exposure, high: m.HIGH, medium: m.MEDIUM, low: m.LOW,
+                     floodM: m.HIGH + m.MEDIUM + m.LOW, startInZone: !!startZone };
+        }
+
+        // ---------- routing requests ----------
+        async function osrm(profile, latlngs, alternatives) {
+            const base = profile === 'walk'
+                ? 'https://routing.openstreetmap.de/routed-foot/route/v1/driving/'
+                : 'https://router.project-osrm.org/route/v1/driving/';
+            const path = latlngs.map(c => c[1] + ',' + c[0]).join(';');
+            const url = base + path + '?overview=full&geometries=geojson&steps=true' + (alternatives ? '&alternatives=true' : '');
+            const ctrl = new AbortController();
+            const timer = setTimeout(() => ctrl.abort(), 15000);
+            try {
+                const r = await fetch(url, { signal: ctrl.signal });
+                if (!r.ok) return [];
+                const j = await r.json();
+                return j.code === 'Ok' ? j.routes : [];
+            } catch (e) {
+                return [];
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        function detourPoints(start, dest) { // start/dest = [lat,lon]
+            const midLat = (start[0] + dest[0]) / 2, midLon = (start[1] + dest[1]) / 2;
+            const cosLat = Math.cos(midLat * Math.PI / 180);
+            const dy = (dest[0] - start[0]) * 111320;
+            const dx = (dest[1] - start[1]) * 111320 * cosLat;
+            const dist = Math.hypot(dx, dy) || 1;
+            const px = -dy / dist, py = dx / dist; // perpendicular unit vector (metres)
+            const out = [];
+            [0.35, 0.7, 1.1].forEach(f => {
+                const off = Math.min(3500, Math.max(300, dist * f));
+                [1, -1].forEach(side => {
+                    const lat = midLat + (py * off * side) / 111320;
+                    const lon = midLon + (px * off * side) / (111320 * cosLat);
+                    if (!zoneAt(lon, lat)) out.push([lat, lon]);   // via-point itself must be dry
+                });
+            });
+            return out;
+        }
+
+        async function computeSafeRoute(start, dest, profile) {
+            let cands = await osrm(profile, [start, dest], true);
+            if (!cands.length) return null;
+
+            let evals = cands.map(r => ({ route: r, ev: evaluateRoute(r) }));
+            const baseline = evals[0];   // OSRM's normal (shortest) route, kept for comparison
+            let usedDetour = false;
+
+            if (!evals.some(e => e.ev.exposure === 0)) {
+                const vias = detourPoints(start, dest);
+                const extra = await Promise.all(vias.map(v => osrm(profile, [start, v, dest], false)));
+                extra.flat().forEach(r => evals.push({ route: r, ev: evaluateRoute(r) }));
+                usedDetour = true;
+            }
+
+            // remove duplicates (same length + time)
+            const seen = new Set();
+            evals = evals.filter(e => {
+                const key = Math.round(e.route.distance / 20) + '-' + Math.round(e.route.duration / 10);
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+
+            // flood exposure matters far more than a few extra minutes
+            const score = e => e.ev.exposure * 20 + e.route.duration;
+            evals.sort((a, b) => score(a) - score(b));
+
+            const best = evals[0];
+            const fastest = evals.reduce((m, e) => (e.route.duration < m.route.duration ? e : m), evals[0]);
+            let status = 'safe';
+            if (best.ev.exposure > 0) status = best.ev.high > 0 ? 'danger' : 'caution';
+
+            return { best, baseline, all: evals, others: evals.slice(1), fastest, status, usedDetour, mode: profile };
+        }
+
+        // ---------- formatting ----------
+        function fmtDist(m) { return m < 1000 ? Math.round(m) + ' m' : (m / 1000).toFixed(1) + ' km'; }
+        function fmtTime(s) {
+            const min = Math.max(1, Math.round(s / 60));
+            if (min < 60) return min + ' min';
+            return Math.floor(min / 60) + ' h ' + (min % 60) + ' min';
+        }
+        function routeChipHtml(r) {
+            if (!r) return '<div class="route-chip chip-warn"><i class="fa-solid fa-road-circle-exclamation"></i> Road route unavailable &ndash; straight line shown</div>';
+            if (r.status === 'safe') return '<div class="route-chip chip-safe"><i class="fa-solid fa-shield-halved"></i> Safe road route found</div>';
+            if (r.status === 'caution') return '<div class="route-chip chip-caution"><i class="fa-solid fa-triangle-exclamation"></i> Route touches a lower-risk flood zone</div>';
+            return '<div class="route-chip chip-danger"><i class="fa-solid fa-triangle-exclamation"></i> No fully safe route &ndash; least flooded shown</div>';
+        }
+
+        // ---------- status helpers ----------
+        function statusOf(ev) {
+            if (ev.exposure === 0) return 'safe';
+            return ev.high > 0 ? 'danger' : 'caution';
+        }
+        const STATUS_META = {
+            safe:    { title: 'Safe route found',            icon: 'fa-shield-halved',        tag: 'Safe' },
+            caution: { title: 'Route touches a lower-risk zone', icon: 'fa-triangle-exclamation', tag: 'Caution' },
+            danger:  { title: 'No fully safe route found',   icon: 'fa-triangle-exclamation', tag: 'Risky' }
+        };
+        function statusMessage(status, ev) {
+            if (status === 'safe') return 'This route stays outside all mapped flood zones.';
+            if (status === 'caution') return `About ${fmtDist(ev.floodM)} of this route is inside a medium/low risk flood zone. No fully dry road was found.`;
+            return `About ${fmtDist(ev.high)} of this route is inside a HIGH risk flood zone (red on the map). This is the least flooded road route available. Never drive or walk through floodwater.`;
+        }
+
+        // ---------- map drawing ----------
+        function clearRouteLayers() {
+            routeLayers.forEach(l => { if (map && map.hasLayer(l)) map.removeLayer(l); });
+            routeLayers = [];
+        }
+
+        function drawRoute(result, dest, start, selIdx, fit) {
+            const group = L.layerGroup();
+
+            // other options: grey dashed, click to choose
+            result.all.forEach((e, i) => {
+                if (i === selIdx || i > 3) return;
+                const ll = e.route.geometry.coordinates.map(c => [c[1], c[0]]);
+                L.polyline(ll, { color: '#94a3b8', weight: 5, opacity: 0.85, dashArray: '8 8' })
+                 .bindTooltip(`Option ${i + 1} &middot; ${fmtDist(e.route.distance)} &middot; click to choose`, { sticky: true })
+                 .on('click', () => selectRoute(i))
+                 .addTo(group);
+            });
+
+            const sel = result.all[selIdx];
+            const selLL = sel.route.geometry.coordinates.map(c => [c[1], c[0]]);
+            L.polyline(selLL, { color: '#ffffff', weight: 10, opacity: 0.95 }).addTo(group);
+
+            const { pts, flags } = sel.ev;
+            if (pts.length >= 2) {
+                let cur = flags[1];
+                let run = [[pts[0][1], pts[0][0]], [pts[1][1], pts[1][0]]];
+                const emit = () => {
+                    const color = cur ? (RISK_COLOR[cur] || '#dc2626') : ROUTE_OK_COLOR;
+                    L.polyline(run, { color, weight: 6, opacity: 1, lineCap: 'round' })
+                     .bindPopup(cur ? `Inside ${cur} flood zone` : 'Outside flood zones').addTo(group);
+                };
+                for (let i = 2; i < pts.length; i++) {
+                    if (flags[i] === cur) {
+                        run.push([pts[i][1], pts[i][0]]);
+                    } else {
+                        emit();
+                        cur = flags[i];
+                        run = [[pts[i - 1][1], pts[i - 1][0]], [pts[i][1], pts[i][0]]];
+                    }
+                }
+                emit();
+            }
+
+            L.marker([dest.lat, dest.lon]).bindPopup(`<b>${safeText(dest.name)}</b>`).addTo(group);
+            group.addTo(map);
+            routeLayers.push(group);
+
+            if (fit) {
+                const bounds = L.latLngBounds(selLL);
+                bounds.extend([start.lat, start.lng]);
+                map.fitBounds(bounds, { padding: [60, 60] });
+            }
+        }
+
+        function drawStraightFallback(dest, start, crosses) {
+            const line = L.polyline([[start.lat, start.lng], [dest.lat, dest.lon]], {
+                color: crosses ? '#e74c3c' : '#27ae60', weight: 4, dashArray: '8 8', opacity: 0.8
+            }).addTo(map).bindPopup('Direct straight line (not a road route).');
+            const mk = L.marker([dest.lat, dest.lon]).addTo(map).bindPopup(`<b>${safeText(dest.name)}</b>`);
+            routeLayers.push(line, mk);
+            map.fitBounds(L.latLngBounds([[start.lat, start.lng], [dest.lat, dest.lon]]), { padding: [60, 60] });
+        }
+
+        // ---------- turn-by-turn ----------
+        const TURN_TEXT = {
+            'left': 'Turn left', 'right': 'Turn right', 'slight left': 'Bear left', 'slight right': 'Bear right',
+            'sharp left': 'Turn sharp left', 'sharp right': 'Turn sharp right', 'straight': 'Continue straight', 'uturn': 'Make a U-turn'
+        };
+        const TURN_ICON = {
+            'left': 'fa-arrow-left', 'right': 'fa-arrow-right', 'slight left': 'fa-arrow-up-left',
+            'slight right': 'fa-arrow-up-right', 'sharp left': 'fa-arrow-left', 'sharp right': 'fa-arrow-right',
+            'straight': 'fa-arrow-up', 'uturn': 'fa-arrow-rotate-left'
+        };
+        function routeSteps(route) {
+            const out = [];
+            (route.legs || []).forEach(l => (l.steps || []).forEach(st => out.push(st)));
+            return out;
+        }
+        function stepInfo(st) {
+            const m = st.maneuver || {};
+            const road = st.name ? safeText(st.name) : '';
+            if (m.type === 'depart') return { icon: 'fa-location-dot', text: 'Start' + (road ? ' on ' + road : '') };
+            if (m.type === 'arrive') return { icon: 'fa-flag-checkered', text: 'Arrive at the shelter' };
+            if (m.type === 'roundabout' || m.type === 'rotary') return { icon: 'fa-rotate', text: 'Take the roundabout' + (road ? ' towards ' + road : '') };
+            const mod = m.modifier || 'straight';
+            const verb = (m.type === 'continue' || m.type === 'new name') && mod === 'straight' ? 'Continue' : (TURN_TEXT[mod] || 'Continue');
+            return { icon: TURN_ICON[mod] || 'fa-arrow-up', text: verb + (road ? ' onto ' + road : '') };
+        }
+        function stepsHtml(route) {
+            const steps = routeSteps(route).filter(st => {
+                const t = (st.maneuver || {}).type;
+                return t === 'depart' || t === 'arrive' || st.distance >= 15;
+            });
+            if (steps.length < 2) return '';
+            return `<details class="rp-steps"><summary><i class="fa-solid fa-list-ol"></i> Turn-by-turn directions (${steps.length} steps)</summary>
+                ${steps.map(st => { const i = stepInfo(st); return `<div class="rp-step"><i class="fa-solid ${i.icon}"></i><span>${i.text}</span><small>${st.distance >= 15 ? fmtDist(st.distance) : ''}</small></div>`; }).join('')}
+            </details>`;
+        }
+
+        // ---------- the docked Safe Route panel ----------
+        function modeToggleHtml() {
+            return `<div class="mode-toggle">
+                <button class="mode-btn ${routeMode === 'walk' ? 'active' : ''}" onclick="setRouteMode('walk')"><i class="fa-solid fa-person-walking"></i> Walk</button>
+                <button class="mode-btn ${routeMode === 'drive' ? 'active' : ''}" onclick="setRouteMode('drive')"><i class="fa-solid fa-car"></i> Drive</button>
+            </div>`;
+        }
+        function panelHeader(showClose) {
+            return `<div class="rp-header"><i class="fa-solid fa-route"></i>
+                <div><h3>Safe Route Planner</h3><p>Road route to a shelter that avoids flood zones</p></div>
+                ${showClose ? '<button class="rp-close" onclick="closeRoute()" title="Clear route"><i class="fa-solid fa-xmark"></i></button>' : ''}</div>`;
+        }
+
+        function renderRoutePanel(state, payload) {
+            const el = document.getElementById('rp-body');
+            if (!el) return;
+
+            if (state === 'loading') {
+                el.innerHTML = panelHeader(true) + `
+                    <div class="rp-banner rp-info"><i class="fa-solid fa-spinner fa-spin"></i>
+                        <div><strong>Finding the safest road route&hellip;</strong>
+                        <span>Checking roads to ${safeText(payload.dest.name)} against flood zones. This can take a few seconds.</span></div></div>
+                    ${modeToggleHtml()}`;
+                return;
+            }
+
+            if (state === 'error') {
+                el.innerHTML = panelHeader(true) + `
+                    <div class="rp-banner rp-caution"><i class="fa-solid fa-road-circle-exclamation"></i>
+                        <div><strong>Road route unavailable</strong>
+                        <span>Could not reach the routing service, so a straight line to ${safeText(payload.dest.name)} is shown. It does NOT follow roads. Check your connection and try again.</span></div></div>
+                    <button class="btn btn-primary rp-btn" onclick="showRouteTo(lastDest)"><i class="fa-solid fa-rotate-right"></i> Try again</button>
+                    ${modeToggleHtml()}`;
+                return;
+            }
+
+            if (state === 'done' && routeState) {
+                const { result, dest, selected } = routeState;
+                const e = result.all[selected];
+                const status = statusOf(e.ev);
+                const meta = STATUS_META[status];
+                const extraSec = e.route.duration - result.fastest.route.duration;
+                const walk = result.mode === 'walk';
+
+                let notes = '';
+                if (status === 'safe' && extraSec > 60) {
+                    notes += `<div class="route-note">Takes about ${fmtTime(extraSec)} longer than the shortest route, to avoid flood zones.</div>`;
+                }
+                if (e.ev.startInZone) {
+                    notes += `<div class="route-note bad">You are currently inside a flood zone. Move out of the zone first.</div>`;
+                }
+
+                const options = result.all.slice(0, 4).map((x, i) => {
+                    const st = statusOf(x.ev);
+                    const label = i === 0 ? 'Recommended' : 'Option ' + (i + 1);
+                    const flood = x.ev.floodM > 0 ? fmtDist(x.ev.floodM) + ' in flood zone' : 'No flood zone';
+                    return `<button class="rp-option ${i === selected ? 'selected' : ''}" onclick="selectRoute(${i})">
+                        <span class="rp-dot dot-${st}"></span>
+                        <span class="rp-opt-main"><b>${label}</b><small>${fmtDist(x.route.distance)} &middot; ${fmtTime(x.route.duration)} &middot; ${flood}</small></span>
+                        <span class="rp-tag tag-${st}">${STATUS_META[st].tag}</span></button>`;
+                }).join('');
+
+                el.innerHTML = panelHeader(true) + `
+                    <div class="rp-banner rp-${status}"><i class="fa-solid ${meta.icon}"></i>
+                        <div><strong>${meta.title}</strong><span>${statusMessage(status, e.ev)}</span></div></div>
+                    <div class="route-dest" style="font-size:.85rem;margin:0 0 4px;"><i class="fa-solid fa-house-chimney"></i> <b>${safeText(dest.name)}</b> &middot; ${walk ? 'Walking' : 'Driving'}</div>
+                    <div class="route-stats">
+                        <div class="route-stat"><span class="label">Distance</span><span class="value">${fmtDist(e.route.distance)}</span></div>
+                        <div class="route-stat"><span class="label">${walk ? 'Walk' : 'Drive'} time</span><span class="value">${fmtTime(e.route.duration)}</span></div>
+                        <div class="route-stat"><span class="label">In flood zone</span><span class="value" style="color:${e.ev.floodM > 0 ? '#dc2626' : '#1e9e55'}">${e.ev.floodM > 0 ? fmtDist(e.ev.floodM) : '0 m'}</span></div>
+                    </div>
+                    ${notes}
+                    ${modeToggleHtml()}
+                    ${result.all.length > 1 ? '<div class="rp-title">Route options</div>' + options : ''}`;
+                return;
+            }
+
+            // idle
+            el.innerHTML = `<div class="rp-banner rp-info"><i class="fa-solid fa-circle-info"></i>
+                <div><strong>No route yet</strong>
+                <span>Go to the Live Map, set your location (click the map or use GPS) and press &quot;Find Nearest suitable shelter&quot;. The route details will appear here.</span></div></div>
+                <button class="btn btn-outline rp-btn" onclick="switchPage('map-view')"><i class="fa-solid fa-map"></i> Open Live Map</button>`;
+        }
+
+        // ---------- Overview page summary card ----------
+        function updateOverviewRoute() {
+            const el = document.getElementById('overview-route');
+            if (!el) return;
+            if (!routeState) { el.style.display = 'none'; el.innerHTML = ''; return; }
+            const { result, dest, selected } = routeState;
+            const e = result.all[selected];
+            const status = statusOf(e.ev);
+            el.style.display = 'block';
+            el.innerHTML = `
+                <div class="card-title"><i class="fa-solid fa-route"></i> Safe Route</div>
+                <div class="route-chip chip-${status === 'safe' ? 'safe' : status === 'caution' ? 'caution' : 'danger'}" style="margin-bottom:12px;"><i class="fa-solid ${STATUS_META[status].icon}"></i> ${STATUS_META[status].title}</div>
+                <div class="ov-route-row"><span>Shelter</span><b>${safeText(dest.name)}</b></div>
+                <div class="ov-route-row"><span>Distance</span><b>${fmtDist(e.route.distance)}</b></div>
+                <div class="ov-route-row"><span>${result.mode === 'walk' ? 'Walk' : 'Drive'} time</span><b>${fmtTime(e.route.duration)}</b></div>
+                <div class="ov-route-row"><span>Inside flood zone</span><b style="color:${e.ev.floodM > 0 ? '#dc2626' : '#1e9e55'}">${e.ev.floodM > 0 ? fmtDist(e.ev.floodM) : 'None'}</b></div>
+                <button class="btn btn-outline" style="width:100%;margin-top:14px;" onclick="switchPage('map-view')"><i class="fa-solid fa-map"></i> Open route on map</button>`;
+        }
+
+        // ---------- actions ----------
+        function hideRouteCard() {          // called when the location changes
+            routeState = null;
+            renderRoutePanel('idle');
+            updateOverviewRoute();
+        }
+        function closeRoute() {
+            routeReqId++;
+            lastDest = null;
+            routeState = null;
+            clearRouteLayers();
+            renderRoutePanel('idle');
+            updateOverviewRoute();
+        }
+        function setRouteMode(mode) {
+            if (routeMode === mode) return;
+            routeMode = mode;
+            if (lastDest && userMarker) showRouteTo(lastDest); else renderRoutePanel('idle');
+        }
+        function selectRoute(i) {
+            if (!routeState || !routeState.result.all[i]) return;
+            routeState.selected = i;
+            clearRouteLayers();
+            drawRoute(routeState.result, routeState.dest, userMarker.getLatLng(), i, false);
+            renderRoutePanel('done');
+            updateOverviewRoute();
+        }
+
+        // ---------- main entry ----------
+        async function showRouteTo(dest) {
+            if (!userMarker || !map || !dest) return null;
+            lastDest = dest;
+            const reqId = ++routeReqId;
+            const start = userMarker.getLatLng();
+
+            clearRouteLayers();
+            routeState = null;
+            updateOverviewRoute();
+            renderRoutePanel('loading', { dest });
+            await zonesReady;
+
+            const result = await computeSafeRoute([start.lat, start.lng], [dest.lat, dest.lon], routeMode);
+            if (reqId !== routeReqId) return null;   // a newer request replaced this one
+
+            lastRouteResult = result;
+            if (!result) {
+                drawStraightFallback(dest, start, false);
+                renderRoutePanel('error', { dest });
+                return null;
+            }
+            routeState = { result, dest, selected: 0 };
+            drawRoute(result, dest, start, 0, true);
+            renderRoutePanel('done');
+            updateOverviewRoute();
+            return result;
+        }
+
+        // Google Maps link that follows OUR chosen route (via a few waypoints)
+        function gmapsSafeUrl(dest, entry) {
+            const mode = routeMode === 'walk' ? 'walking' : 'driving';
+            let url = `https://www.google.com/maps/dir/?api=1&destination=${dest.lat},${dest.lon}&travelmode=${mode}`;
+            if (!entry || !userMarker) return url;
+            const s = userMarker.getLatLng();
+            url += `&origin=${s.lat},${s.lng}`;
+            const pts = entry.route.geometry.coordinates;
+            const n = Math.min(6, Math.floor(pts.length / 20));
+            const wps = [];
+            for (let i = 1; i <= n; i++) {
+                const p = pts[Math.floor(pts.length * i / (n + 1))];
+                wps.push(`${p[1].toFixed(5)},${p[0].toFixed(5)}`);
+            }
+            if (wps.length) url += `&waypoints=${encodeURIComponent(wps.join('|'))}`;
+            return url;
+        }
+        function chooseShelter(i) {
+            const d = shelterTargets[i];
+            if (d) showRouteTo(d);
+        }
+        function goToRoute(i) {
+            const d = shelterTargets[i];
+            if (!d) return;
+            switchPage('map-view');
+            showRouteTo(d);
+        }
+        function openSafeNav(i) {
+            const d = shelterTargets[i];
+            if (!d) return;
+            const entry = (routeState && routeState.dest.lat === d.lat && routeState.dest.lon === d.lon)
+                ? routeState.result.all[routeState.selected] : null;
+            window.open(gmapsSafeUrl(d, entry), '_blank');
+        }
+        function openSafeNavSelected() {
+            if (!routeState) return;
+            window.open(gmapsSafeUrl(routeState.dest, routeState.result.all[routeState.selected]), '_blank');
+        }
+
         async function findShelter() {
             if (!userMarker) { alert('Please click on the map or use GPS to set a location first.'); return; }
             
             const lat = userMarker.getLatLng().lat;
             const lon = userMarker.getLatLng().lng;
             
-            routeLayers.forEach(l => map.removeLayer(l));
-            routeLayers = [];
+            clearRouteLayers();
 
             const res = await post('/api/shelter', { lat: lat, lon: lon });
             
@@ -735,51 +1361,66 @@
             
             if (res.recommended) {
                 const s = res.recommended.shelter;
-                const crosses = res.recommended.crosses_flood_zone;
                 const capacityPercentage = Math.round((res.recommended.free_places / s.capacity) * 100);
-                
-                const lineColor = crosses ? '#e74c3c' : '#27ae60';
-                const popupText = crosses ? "Direct straight line (not a road route). Crosses a flood zone." : "Direct straight line (not a road route).";
 
-                routeLayers.push(L.polyline([[lat, lon], [s.lat, s.lon]], { 
-                    color: lineColor, weight: 4, dashArray: '8 8', opacity: 0.8 
-                }).addTo(map).bindPopup(popupText));
+                shelterTargets = [{ lat: s.lat, lon: s.lon, name: s.name }];
+                (res.alternatives || []).forEach(alt => shelterTargets.push({ lat: alt.shelter.lat, lon: alt.shelter.lon, name: alt.shelter.name }));
 
-                routeLayers.push(L.marker([s.lat, s.lon]).addTo(map).bindPopup(`<b>${s.name}</b>`).openPopup());
+                // Real road route to the recommended shelter (drawn on the map)
+                const route = await showRouteTo(shelterTargets[0]);
+                if (!route) {
+                    // routing service down -> keep old straight-line behaviour as fallback
+                    clearRouteLayers();
+                    drawStraightFallback(shelterTargets[0], userMarker.getLatLng(), res.recommended.crosses_flood_zone);
+                }
+
+                const distText = route ? fmtDist(route.best.route.distance) : res.recommended.distance_m + ' m';
+                const timeText = route ? fmtTime(route.best.route.duration) : res.recommended.eta_min + ' min';
+                const timeLabel = route ? (routeMode === 'walk' ? 'Walk time' : 'Drive time') : 'ETA';
                 
+                // ---- Recommended shelter: its own highlighted section ----
                 let html = `
-                    <div class="shelter-item" style="border: 2px solid var(--primary-blue);">
-                        <span class="shelter-badge badge-recommended">Nearest suitable shelter</span>
-                        <div class="shelter-icon-placeholder">
-                            <i class="fa-solid fa-building-shield"></i>
-                        </div>
-                        <div class="shelter-content">
-                            <h4>${s.name}</h4>
-                            <p>${res.message}</p>
-                            
-                            <div class="facilities">
-                                ${getFacilities().map(f => getFacilityIcon(f)).join('')}
+                    <div class="rec-section">
+                        <div class="sec-title"><i class="fa-solid fa-star"></i> Recommended shelter</div>
+                        <div class="shelter-item" style="border: 2px solid var(--safe);">
+                            <span class="shelter-badge badge-recommended">Nearest suitable shelter</span>
+                            <div class="shelter-icon-placeholder" style="background: var(--safe-bg);">
+                                <i class="fa-solid fa-building-shield" style="color: var(--safe); opacity: .7;"></i>
                             </div>
+                            <div class="shelter-content">
+                                <h4>${safeText(s.name)}</h4>
+                                ${routeChipHtml(route)}
+                                <p>${safeText(res.message)}</p>
+                                
+                                <div class="facilities">
+                                    ${getFacilities().map(f => getFacilityIcon(f)).join('')}
+                                </div>
 
-                            <div class="availability-bar-container">
-                                <div class="availability-bar" style="width: ${capacityPercentage}%;"></div>
-                            </div>
-                            <span class="availability-text">${res.recommended.free_places} of ${s.capacity} spaces available</span>
+                                <div class="availability-bar-container">
+                                    <div class="availability-bar" style="width: ${capacityPercentage}%;"></div>
+                                </div>
+                                <span class="availability-text">${res.recommended.free_places} of ${s.capacity} spaces available</span>
 
-                            <div class="shelter-stats">
-                                <div class="stat-box"><span class="label">Distance</span><span class="value">${res.recommended.distance_m} m</span></div>
-                                <div class="stat-box"><span class="label">ETA</span><span class="value">${res.recommended.eta_min} min</span></div>
+                                <div class="shelter-stats">
+                                    <div class="stat-box"><span class="label">Road distance</span><span class="value">${distText}</span></div>
+                                    <div class="stat-box"><span class="label">${timeLabel}</span><span class="value">${timeText}</span></div>
+                                </div>
+                                
+                                <button class="btn-showmap" onclick="goToRoute(0)">
+                                    <i class="fa-solid fa-route"></i> Show safe route on map
+                                </button>
+                                <button class="btn-navigate" onclick="openSafeNav(0)">
+                                    <i class="fa-solid fa-diamond-turn-right"></i> Navigate via Google Maps
+                                </button>
                             </div>
-                            
-                            <button class="btn-navigate" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lon}', '_blank')">
-                                <i class="fa-solid fa-diamond-turn-right"></i> Navigate via Google Maps
-                            </button>
                         </div>
                     </div>
                 `;
                 
-                if(res.alternatives.length > 0) {
-                    res.alternatives.forEach(alt => {
+                // ---- Alternatives: separate section below ----
+                if ((res.alternatives || []).length > 0) {
+                    html += `<div class="sec-title"><i class="fa-solid fa-layer-group"></i> Alternatives</div><div class="alt-grid">`;
+                    res.alternatives.forEach((alt, idx) => {
                         const altCapacity = Math.round((alt.free_places / alt.shelter.capacity) * 100);
                         html += `
                             <div class="shelter-item">
@@ -788,7 +1429,7 @@
                                     <i class="fa-solid fa-building-shield" style="color: var(--text-muted);"></i>
                                 </div>
                                 <div class="shelter-content">
-                                    <h4>${alt.shelter.name}</h4>
+                                    <h4>${safeText(alt.shelter.name)}</h4>
                                     <p>Alternative safe location nearby.</p>
 
                                     <div class="availability-bar-container">
@@ -797,196 +1438,231 @@
                                     <span class="availability-text">${alt.free_places} of ${alt.shelter.capacity} spaces available</span>
 
                                     <div class="shelter-stats">
-                                        <div class="stat-box"><span class="label">Distance</span><span class="value">${alt.distance_m} m</span></div>
+                                        <div class="stat-box"><span class="label">Straight-line</span><span class="value">${alt.distance_m} m</span></div>
                                         <div class="stat-box"><span class="label">Free Space</span><span class="value">${alt.free_places}</span></div>
                                     </div>
                                     
-                                    <button class="btn-navigate" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${alt.shelter.lat},${alt.shelter.lon}', '_blank')">
+                                    <button class="btn-showmap" onclick="goToRoute(${idx + 1})">
+                                        <i class="fa-solid fa-route"></i> Show safe route on map
+                                    </button>
+                                    <button class="btn-navigate" onclick="openSafeNav(${idx + 1})">
                                         <i class="fa-solid fa-diamond-turn-right"></i> Navigate
                                     </button>
                                 </div>
                             </div>
                         `;
                     });
+                    html += `</div>`;
                 }
                 shelterList.innerHTML = html;
 
-                switchPage('shelters');
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                document.querySelector('a[onclick="switchPage(\'shelters\')"]').classList.add('active');
+                // Stay on the map when the safe route was drawn so the user can see it;
+                // the shelter details are one click away in the "Shelters" tab.
+                if (!route) switchPage('shelters');
 
             } else {
-                shelterList.innerHTML = `
-                    <div style="text-align: center; width: 100%; padding: 50px; color: var(--text-muted);">
-                        <i class="fa-solid fa-shield-check" style="font-size: 4rem; color: var(--safe); margin-bottom: 20px;"></i>
-                        <h3 style="color: var(--safe); margin-bottom: 10px;">You are Safe</h3>
-                        <p>${res.message}</p>
-                    </div>
-                `;
-                switchPage('shelters');
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                document.querySelector('a[onclick="switchPage(\'shelters\')"]').classList.add('active');
+                shelterList.innerHTML = '';
+                showSafeModal(res.message);
             }
         }
 
-        // --- HELP REQUEST LOGIC ---
-        async function submitHelp() {
-            if (!userMarker) {
-                document.getElementById('helpStatus').innerHTML = 
-                    `<span style="color: var(--critical);">Please set your location on the map first (Go to Live Map and click).</span>`;
-                return;
-            }
-            
-            const helpType = document.getElementById('helpType').value;
-            const urgency = document.getElementById('helpUrgency').value;
-            const description = document.getElementById('helpDescription').value;
-            
-            if (!description || description.length < 3) {
-                document.getElementById('helpStatus').innerHTML = 
-                    `<span style="color: var(--critical);">Please describe what you need.</span>`;
-                return;
-            }
-            
-            const lat = userMarker.getLatLng().lat;
-            const lon = userMarker.getLatLng().lng;
-            
-            const res = await post('/api/help', { 
-                lat: lat, 
-                lon: lon, 
-                help_type: helpType, 
-                urgency: urgency, 
-                description: description 
-            });
-            
-            if (res.id) {
-                document.getElementById('helpStatus').innerHTML = 
-                    `<span style="color: var(--safe);">✅ Request Sent! ID: ${res.id}. Rescuers will contact you soon.</span>`;
-                document.getElementById('helpDescription').value = ""; 
-                document.getElementById('helpLocationText').value = "";
-                document.getElementById('helpName').value = "";
-                document.getElementById('helpContact').value = "";
-            } else {
-                document.getElementById('helpStatus').innerHTML = 
-                    `<span style="color: var(--critical);">❌ Failed to send request. Please try again.</span>`;
-            }
-        }
-
-        // --- RESPONSES LOGIC (Urgency-filtered cards) ---
-        let allHelpRequests = [];
-
-        function urgencyLevel(value) {
-            const v = String(value || '').toUpperCase();
-            if (v.includes('HIGH') || v.includes('CRITICAL')) return 'HIGH';
-            if (v.includes('MEDIUM') || v.includes('MODERATE')) return 'MEDIUM';
-            return 'LOW';
-        }
-
+        // ===================================================================
+        // SAFE ROUTE TAB: comparison demo + batch evaluation
+        // ===================================================================
         function safeText(value) {
             return String(value ?? '').replace(/[&<>"']/g, ch => ({
                 '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
             }[ch]));
         }
 
-        async function loadHelpRequests() {
-            const container = document.getElementById('responder-details-container');
-            container.innerHTML = '<div class="response-empty"><i class="fa-solid fa-spinner fa-spin"></i> Loading help requests...</div>';
-            try {
-                const res = await fetch('/api/help');
-                if (!res.ok) throw new Error('Request failed: ' + res.status);
-                const data = await res.json();
-                allHelpRequests = Array.isArray(data) ? data : [];
-                renderHelpRequestCards();
-            } catch (err) {
-                console.error('Error loading help requests:', err);
-                container.innerHTML = '<div class="response-empty" style="color:#b91c1c"><i class="fa-solid fa-triangle-exclamation"></i> Failed to load requests. Please refresh and try again.</div>';
-            }
+        let map2 = null, srLayers = [], srLast = null, srRunId = 0, evalRows = [], evalRunning = false;
+        const SR_SCENARIOS = [
+            { label: 'Inside High Risk (Kolonnawa)',   lat: 6.935, lon: 79.885  },
+            { label: 'Near High Risk (500 m away)',    lat: 6.935, lon: 79.9045 },
+            { label: 'Inside Medium Risk (Kelaniya)',  lat: 6.960, lon: 79.925  },
+            { label: 'Outside all zones',              lat: 6.890, lon: 79.840  }
+        ];
+
+        function addBaseTiles(m) {
+            const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
+            });
+            const carto = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19, subdomains: 'abcd', attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+            });
+            let errs = 0, switched = false;
+            osm.on('tileerror', () => {
+                if (!switched && ++errs >= 4) { switched = true; m.removeLayer(osm); carto.addTo(m); }
+            });
+            osm.addTo(m);
         }
 
-        function renderHelpRequestCards() {
-            const container = document.getElementById('responder-details-container');
-            if (!container) return;
-            const filter = document.getElementById('urgencyFilter')?.value || 'ALL';
-            const filtered = allHelpRequests.filter(req => filter === 'ALL' || urgencyLevel(req.urgency) === filter);
-
-            if (filtered.length === 0) {
-                const message = allHelpRequests.length === 0 ? 'No help requests have been submitted yet.' : 'No requests match this urgency filter.';
-                container.innerHTML = `<div class="response-empty"><i class="fa-regular fa-folder-open"></i> ${message}</div>`;
-                return;
-            }
-
-            container.innerHTML = filtered.map(req => {
-                const level = urgencyLevel(req.urgency);
-                const urgencyClass = level.toLowerCase();
-                const status = String(req.status || 'OPEN').toUpperCase();
-                const accepted = status === 'ACCEPTED';
-                const timeAgo = req.timestamp ? formatTimeAgo(new Date(req.timestamp)) : 'Time unavailable';
-                const lat = Number(req.lat);
-                const lon = Number(req.lon);
-                const coordinates = Number.isFinite(lat) && Number.isFinite(lon) ? `${lat.toFixed(4)}, ${lon.toFixed(4)}` : 'Location unavailable';
-                const id = safeText(req.id);
-                const type = safeText(req.help_type || 'Help request');
-                const description = safeText(req.description || 'No description provided.');
-                const acceptedBy = safeText(req.accepted_by || 'Response team');
-                const urgencyLabel = level.charAt(0) + level.slice(1).toLowerCase();
-
-                return `
-                    <article class="responder-card urgency-${urgencyClass}" id="detail-card-${id}">
-                        <div class="response-card-top">
-                            <div style="min-width:0; flex:1;">
-                                <h3 class="response-type urgency-text-${urgencyClass}">${type}</h3>
-                                <span class="urgency-pill urgency-pill-${urgencyClass}"><i class="fa-solid fa-triangle-exclamation"></i> ${urgencyLabel} urgency</span>
-                            </div>
-                            <span class="status-badge ${accepted ? 'badge-accepted' : 'badge-open'}">${accepted ? 'ACCEPTED' : 'OPEN'}</span>
-                        </div>
-                        <p class="response-description">${description}</p>
-                        <div class="response-meta">
-                            <span><i class="fa-solid fa-hashtag"></i> ${id}</span>
-                            <span><i class="fa-solid fa-location-dot"></i> ${coordinates}</span>
-                            <span><i class="fa-regular fa-clock"></i> ${safeText(timeAgo)}</span>
-                        </div>
-                        ${accepted
-                            ? `<div class="accepted-note"><i class="fa-solid fa-circle-check"></i> Accepted by ${acceptedBy}</div>`
-                            : `<div class="response-actions">
-                                <input type="text" class="responder-name-input" id="responder-name-${id}" placeholder="Enter your name or response team" aria-label="Responder name or team">
-                                <button class="btn btn-primary" style="padding:11px 18px; font-size:.9rem; border-radius:8px; white-space:nowrap;" onclick="acceptRequest('${id}')"><i class="fa-solid fa-check"></i> Accept request</button>
-                              </div>`
-                        }
-                    </article>`;
-            }).join('');
-        }
-
-        async function acceptRequest(rid) {
-            const nameInput = document.getElementById(`responder-name-${rid}`);
-            const responderName = nameInput ? nameInput.value.trim() : '';
-            if (!responderName) {
-                alert('Please enter your name or team name.');
-                if (nameInput) nameInput.focus();
-                return;
-            }
-            try {
-                const res = await fetch(`/api/help/${encodeURIComponent(rid)}/accept?responder=${encodeURIComponent(responderName)}`, { method: 'POST' });
-                if (res.ok) {
-                    alert('Request accepted successfully.');
-                    await loadHelpRequests();
-                } else {
-                    const message = await res.text();
-                    console.error('Failed to accept request:', message);
-                    alert('Failed to accept request. Please try again.');
+        let map2Starting = null;
+        function initMap2() {
+            if (map2Starting) return map2Starting;
+            map2Starting = (async () => {
+                if (typeof L === 'undefined') {
+                    document.getElementById('sr-map').innerHTML = '<div style="padding:30px;color:#b91c1c;">Map library could not be loaded. Check your internet connection.</div>';
+                    return;
                 }
-            } catch (err) {
-                console.error('Error accepting help:', err);
-                alert('Error accepting request. Please check your connection.');
-            }
+                map2 = L.map('sr-map').setView([6.94, 79.89], 13);
+                addBaseTiles(map2);
+                map2.on('click', e => runScenarioAt([e.latlng.lat, e.latlng.lng], 'Custom point (clicked on map)'));
+                await Promise.all([fetchZonesData(), fetchShelters()]);
+                floodZones.forEach(z => {
+                    L.geoJSON({ type: 'MultiPolygon', coordinates: z.polys },
+                        { style: { color: COLORS[z.risk] || COLORS.LOW, weight: 2, fillOpacity: 0.2 } })
+                        .bindPopup(`<b>${safeText(z.name)}</b><br>Risk: ${z.risk}`).addTo(map2);
+                });
+                allShelters.forEach(s => {
+                    L.circleMarker([s.lat, s.lon], { radius: 7, fillColor: '#27ae60', color: '#fff', weight: 2, fillOpacity: 0.85 })
+                     .addTo(map2).bindPopup(`<b>${safeText(s.name)}</b>`);
+                });
+                map2.invalidateSize();
+            })();
+            return map2Starting;
         }
 
-        // Helper function for "Time Ago"
-        function formatTimeAgo(date) {
-            const seconds = Math.floor((new Date() - date) / 1000);
-            let interval = seconds / 3600;
-            if (interval > 1) return Math.floor(interval) + " h ago";
-            interval = seconds / 60;
-            if (interval > 1) return Math.floor(interval) + " min ago";
-            return Math.floor(seconds) + " sec ago";
+        function setSrMode(mode) {
+            routeMode = mode;
+            document.getElementById('sr-mode-walk').classList.toggle('active', mode === 'walk');
+            document.getElementById('sr-mode-drive').classList.toggle('active', mode === 'drive');
+            if (srLast) runScenarioAt(srLast.origin, srLast.label);
+        }
+
+        // nearest shelter that is not itself inside a flood zone (straight-line distance)
+        function pickShelterLocal(origin) {
+            let list = allShelters.filter(s => !zoneAt(s.lon, s.lat));
+            if (!list.length) list = allShelters;
+            let best = null, bd = Infinity;
+            list.forEach(s => {
+                const d = haversine([origin[1], origin[0]], [s.lon, s.lat]);
+                if (d < bd) { bd = d; best = { lat: s.lat, lon: s.lon, name: s.name }; }
+            });
+            return best;
+        }
+
+        function straightEval(a, b) { // a,b = [lat,lon]
+            return evaluateRoute({ geometry: { coordinates: [[a[1], a[0]], [b[1], b[0]]] } });
+        }
+
+        function drawEvRuns(group, ev, weight, baseColor) {
+            const { pts, flags } = ev;
+            if (pts.length < 2) return;
+            let cur = flags[1];
+            let run = [[pts[0][1], pts[0][0]], [pts[1][1], pts[1][0]]];
+            const emit = () => {
+                const color = cur ? (RISK_COLOR[cur] || '#dc2626') : baseColor;
+                L.polyline(run, { color, weight, opacity: 1, lineCap: 'round' }).addTo(group);
+            };
+            for (let i = 2; i < pts.length; i++) {
+                if (flags[i] === cur) run.push([pts[i][1], pts[i][0]]);
+                else { emit(); cur = flags[i]; run = [[pts[i - 1][1], pts[i - 1][0]], [pts[i][1], pts[i][0]]]; }
+            }
+            emit();
+        }
+
+        function runScenario(i) {
+            const sc = SR_SCENARIOS[i];
+            runScenarioAt([sc.lat, sc.lon], sc.label);
+        }
+
+        async function runScenarioAt(origin, label) {
+            await initMap2();
+            if (!map2) return;
+            const runId = ++srRunId;
+            srLast = { origin, label };
+            srLayers.forEach(l => map2.removeLayer(l));
+            srLayers = [];
+            const out = document.getElementById('sr-results');
+            out.innerHTML = '<div class="sr-status"><i class="fa-solid fa-spinner fa-spin"></i> Analysing routes for: ' + safeText(label) + ' &hellip; this can take a few seconds.</div>';
+
+            await Promise.all([fetchZonesData(), fetchShelters()]);
+
+            let dest = null;
+            const r = await post('/api/shelter', { lat: origin[0], lon: origin[1] });
+            if (r && r.recommended && r.recommended.shelter) {
+                const sh = r.recommended.shelter;
+                dest = { lat: sh.lat, lon: sh.lon, name: sh.name };
+            } else {
+                dest = pickShelterLocal(origin);
+            }
+            if (runId !== srRunId) return;
+            if (!dest) {
+                out.innerHTML = '<div class="sr-status">No shelter data available, so no route can be compared.</div>';
+                map2.setView(origin, 14);
+                return;
+            }
+
+            const result = await computeSafeRoute(origin, [dest.lat, dest.lon], routeMode);
+            if (runId !== srRunId) return;
+            if (!result) {
+                out.innerHTML = '<div class="sr-status v-bad">Could not reach the routing service. Check your internet connection and try again.</div>';
+                return;
+            }
+            renderComparison(origin, dest, result, label);
+        }
+
+        function renderComparison(origin, dest, result, label) {
+            const base = result.baseline, safe = result.best;
+            const same = base === safe;
+            const sEv = straightEval(origin, [dest.lat, dest.lon]);
+            const straightDist = haversine([origin[1], origin[0]], [dest.lon, dest.lat]);
+
+            // ----- map -----
+            const group = L.layerGroup();
+            L.polyline([origin, [dest.lat, dest.lon]], { color: '#64748b', weight: 3, dashArray: '8 8', opacity: .9 }).addTo(group);
+            if (!same) {
+                L.polyline(base.route.geometry.coordinates.map(c => [c[1], c[0]]), { color: '#ffffff', weight: 12, opacity: .9 }).addTo(group);
+                drawEvRuns(group, base.ev, 9, '#2563eb');
+            }
+            L.polyline(safe.route.geometry.coordinates.map(c => [c[1], c[0]]), { color: '#ffffff', weight: 8, opacity: .95 }).addTo(group);
+            drawEvRuns(group, safe.ev, 5, ROUTE_OK_COLOR);
+            L.marker(origin).bindPopup('Start: ' + safeText(label)).addTo(group);
+            L.marker([dest.lat, dest.lon]).bindPopup('<b>' + safeText(dest.name) + '</b>').addTo(group);
+            group.addTo(map2);
+            srLayers.push(group);
+            map2.fitBounds(L.latLngBounds([origin, [dest.lat, dest.lon], ...safe.route.geometry.coordinates.map(c => [c[1], c[0]])]), { padding: [40, 40] });
+
+            // ----- table -----
+            const fz = m => m > 0 ? `<span class="v-bad">${fmtDist(m)}</span>` : `<span class="v-good">0 m</span>`;
+            const verdict = e => e.ev.exposure === 0 ? '<span class="v-good">Safe</span>'
+                              : e.ev.high > 0 ? '<span class="v-bad">Danger</span>' : '<span class="v-mid">Caution</span>';
+
+            const extraSec = safe.route.duration - base.route.duration;
+            const redM = base.ev.floodM - safe.ev.floodM;
+            const redPct = base.ev.floodM > 0 ? Math.round(redM / base.ev.floodM * 100) : 0;
+
+            let headline, cls;
+            if (base.ev.floodM === 0) {
+                headline = 'The shortest road route already stays outside the flood zones here, so the safe route is the same route.';
+                cls = 'info';
+            } else if (safe.ev.floodM === 0) {
+                headline = `The shortest road route passes through ${fmtDist(base.ev.floodM)} of flood zone. The KelaniFlood safe route avoids flood zones completely` +
+                           (extraSec > 30 ? `, for about ${fmtTime(extraSec)} extra travel time.` : ' at almost no extra travel time.');
+                cls = 'good';
+            } else if (redM > 0) {
+                headline = `No fully dry route exists. The safe route still cuts flood exposure by ${redPct}% (${fmtDist(base.ev.floodM)} down to ${fmtDist(safe.ev.floodM)})` +
+                           (extraSec > 30 ? `, for about ${fmtTime(extraSec)} extra.` : '.');
+                cls = 'mid';
+            } else {
+                headline = 'No route with less flood exposure was found, so the shortest route is shown. Do not travel through floodwater.';
+                cls = 'bad';
+            }
+            const startNote = safe.ev.startInZone
+                ? '<div class="sr-note">The start point is inside a flood zone, so the first part of every route is unavoidably inside it.</div>' : '';
+
+            document.getElementById('sr-results').innerHTML = `
+                <div class="sr-status"><b>${safeText(label)}</b> &rarr; ${safeText(dest.name)} &middot; ${routeMode === 'walk' ? 'Walking' : 'Driving'}</div>
+                <div class="sr-scroll"><table class="sr-table">
+                    <thead><tr><th>Route</th><th>Distance</th><th>${routeMode === 'walk' ? 'Walk' : 'Drive'} time</th><th>Inside flood zone</th><th>Verdict</th></tr></thead>
+                    <tbody>
+                        <tr><td>Straight line <span style="color:#94a3b8">(not a real route)</span></td><td>${fmtDist(straightDist)}</td><td>&ndash;</td><td>${fz(sEv.floodM)}</td><td style="color:#64748b">Cannot be travelled</td></tr>
+                        <tr><td>Shortest road route</td><td>${fmtDist(base.route.distance)}</td><td>${fmtTime(base.route.duration)}</td><td>${fz(base.ev.floodM)}</td><td>${verdict(base)}</td></tr>
+                        <tr class="sr-best"><td>KelaniFlood safe route${same ? ' <span style="color:#64748b;font-weight:400">(same as shortest)</span>' : ''}</td><td>${fmtDist(safe.route.distance)}</td><td>${fmtTime(safe.route.duration)}</td><td>${fz(safe.ev.floodM)}</td><td>${verdict(safe)}</td></tr>
+                    </tbody>
+                </table></div>
+                <div class="sr-headline ${cls}">${headline}</div>${startNote}`;
         }
     </script>
 </body>
