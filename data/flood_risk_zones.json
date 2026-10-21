@@ -42,6 +42,102 @@
           [79.910, 6.945]
         ]]
       }
+    },
+    {
+      "zone_id": "KLN-DS-03",
+      "name": "Kaduwela (High Risk Zone)",
+      "risk_level": "HIGH",
+      "confidence": 0.85,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [79.920, 6.920],
+          [79.940, 6.925],
+          [79.950, 6.930],
+          [79.955, 6.945],
+          [79.948, 6.955],
+          [79.935, 6.950],
+          [79.925, 6.945],
+          [79.920, 6.935],
+          [79.920, 6.920]
+        ]]
+      }
+    },
+    {
+      "zone_id": "KLN-DS-04",
+      "name": "Biyagama (Medium Risk Zone)",
+      "risk_level": "MEDIUM",
+      "confidence": 0.70,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [79.940, 6.960],
+          [79.955, 6.965],
+          [79.965, 6.975],
+          [79.960, 6.990],
+          [79.945, 6.995],
+          [79.935, 6.985],
+          [79.935, 6.970],
+          [79.940, 6.960]
+        ]]
+      }
+    },
+    {
+      "zone_id": "KLN-DS-05",
+      "name": "Wattala (Low Risk Zone)",
+      "risk_level": "LOW",
+      "confidence": 0.60,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [79.880, 6.960],
+          [79.895, 6.965],
+          [79.905, 6.975],
+          [79.900, 6.990],
+          [79.885, 6.995],
+          [79.875, 6.985],
+          [79.870, 6.970],
+          [79.880, 6.960]
+        ]]
+      }
+    },
+    {
+      "zone_id": "KLN-DS-06",
+      "name": "Hanwella (Medium Risk Zone)",
+      "risk_level": "MEDIUM",
+      "confidence": 0.65,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [79.960, 6.880],
+          [79.980, 6.890],
+          [79.990, 6.900],
+          [79.985, 6.920],
+          [79.970, 6.925],
+          [79.955, 6.915],
+          [79.950, 6.900],
+          [79.960, 6.880]
+        ]]
+      }
+    },
+    {
+      "zone_id": "KLN-DS-07",
+      "name": "Dompe (Low Risk Zone)",
+      "risk_level": "LOW",
+      "confidence": 0.55,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [79.980, 6.940],
+          [79.995, 6.945],
+          [80.005, 6.955],
+          [80.000, 6.970],
+          [79.985, 6.975],
+          [79.975, 6.965],
+          [79.970, 6.950],
+          [79.980, 6.940]
+        ]]
+      }
     }
   ],
   "reservoir": {"pre_spill": false, "eta_minutes": null}

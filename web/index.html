@@ -362,6 +362,92 @@
         .sr-note { font-size: .78rem; color: #64748b; line-height: 1.6; margin-top: 8px; }
         @media (max-width: 700px) { .sr-mode { margin-left: 0; } #sr-map { height: 300px; } }
 
+        /* ===== OVERVIEW REDESIGN ===== */
+        .ov-wrap{width:100%;max-width:1200px;margin:0 auto;flex-shrink:0;padding-bottom:40px}
+        .ov-hero{position:relative;border-radius:20px;overflow:hidden;background:linear-gradient(180deg,#dcecfb 0%,#f3f9ff 70%);border:1px solid var(--border-color);min-height:240px;display:flex;align-items:center}
+        .ov-hero svg{position:absolute;inset:0;width:100%;height:100%}
+        .ov-hero-text{position:relative;z-index:2;padding:36px 44px;max-width:580px}
+        .ov-hero-text h1{font-size:2rem;line-height:1.25;color:#10355c;font-weight:700}
+        .ov-hero-text p{margin-top:10px;color:#4a6176;font-size:.95rem;line-height:1.7}
+        .ov-btns{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+        .ov-btns .btn{padding:12px 20px;font-size:.9rem}
+        .ov-btns .btn-outline{background:#ffffffd9}
+        .ov-wv1{animation:ovDrift 9s linear infinite}.ov-wv2{animation:ovDrift 14s linear infinite reverse}
+        @keyframes ovDrift{to{transform:translateX(-200px)}}
+
+        .ov-sec{display:flex;justify-content:space-between;align-items:center;margin:30px 0 14px}
+        .ov-sec h2{font-size:1.1rem;font-weight:600;color:var(--text-dark)}
+        .ov-live{font-size:.8rem;color:var(--text-muted);display:flex;align-items:center;gap:8px}
+        .ov-dot{width:9px;height:9px;border-radius:50%;background:var(--safe);box-shadow:0 0 0 4px #1e9e5522}
+        .ov-dot.off{background:#94a3b8;box-shadow:none}
+        
+        /* Updated grid for 5 cards */
+        .ov-grid3{display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:20px}
+        
+        .ov-grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:start}
+        .ov-card{background:#fff;border:1px solid var(--border-color);border-radius:16px;padding:22px;box-shadow:0 4px 18px rgba(16,53,92,.05); display:flex; flex-direction:column;}
+        .ov-ct{font-size:.85rem;color:var(--text-muted);font-weight:500;display:flex;gap:9px;align-items:center;margin-bottom:14px}
+        .ov-ct i{color:var(--primary-blue)}
+        .ov-big{font-size:2.6rem;font-weight:700;color:var(--primary-blue);line-height:1}
+        .ov-big small{font-size:1rem;color:var(--text-muted);font-weight:500;margin-left:4px}
+        .ov-sub{font-size:.8rem;color:var(--text-muted);margin-top:8px}
+        .ov-tank{height:10px;background:var(--primary-light);border-radius:6px;margin-top:18px;overflow:hidden}
+        .ov-tank div{height:100%;width:0;background:linear-gradient(90deg,#4aa3f0,#0056b3);border-radius:6px;transition:width .8s}
+        .ov-ticks{display:flex;justify-content:space-between;font-size:.7rem;color:var(--text-muted);margin-top:5px}
+        .ov-rain-ico{font-size:2.6rem;margin-bottom:6px}
+        .ov-rain-t{font-size:1.5rem;font-weight:700}
+        .ov-row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-color);font-size:.9rem}
+        .ov-row:last-child{border:none}.ov-row span{color:var(--text-muted)}.ov-row b{text-align:right}
+        .ov-pill{display:inline-flex;gap:7px;align-items:center;font-size:.75rem;font-weight:600;padding:4px 11px;border-radius:20px}
+        .ov-pill.ok{background:var(--safe-bg);color:var(--safe)}.ov-pill.off{background:#f1f5f9;color:#94a3b8}
+
+        .ov-res{display:flex;gap:20px;align-items:center}
+        .ov-res-ico{width:74px;height:74px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0}
+        .ov-res-name{font-size:1.15rem;font-weight:600}
+        .ov-res-state{font-size:1.7rem;font-weight:700;margin:2px 0}
+        .ov-res.NORMAL .ov-res-ico{background:var(--safe-bg);color:var(--safe)}.ov-res.NORMAL .ov-res-state{color:var(--safe)}
+        .ov-res.WARNING .ov-res-ico{background:var(--warning-bg);color:var(--warning)}.ov-res.WARNING .ov-res-state{color:var(--warning)}
+        .ov-res.CRITICAL .ov-res-ico{background:var(--critical-bg);color:var(--critical);animation:ovPulse 1.4s infinite}.ov-res.CRITICAL .ov-res-state{color:var(--critical)}
+        @keyframes ovPulse{50%{transform:scale(1.08)}}
+        .ov-res-bar{display:flex;gap:6px;margin-top:18px}
+        .ov-res-bar i{flex:1;height:8px;border-radius:5px;background:var(--border-color)}
+        .ov-res.NORMAL ~ .ov-res-bar i:nth-child(1){background:var(--safe)}
+        .ov-res.WARNING ~ .ov-res-bar i:nth-child(-n+2){background:var(--warning)}
+        .ov-res.CRITICAL ~ .ov-res-bar i{background:var(--critical)}
+        .ov-res-lbl{display:flex;justify-content:space-between;font-size:.7rem;color:var(--text-muted);margin-top:5px}
+        @media(max-width:900px){.ov-grid3,.ov-grid2{grid-template-columns:1fr}.ov-hero-text{padding:28px}}
+
+        /* Shelters list horizontal - all in one row */
+        .shelters-horizontal-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .shelters-horizontal-list .shelter-item {
+            width: 100%;
+            min-width: 0;
+        }
+        .recommended-card-compact {
+            max-width: 520px;
+            margin: 0 auto 30px;
+        }
+        
+        /* All shelters grid - same size */
+        .all-shelters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .all-shelters-grid .shelter-item {
+            width: 100%;
+            min-width: 0;
+        }
     </style>
 </head>
 <body>
@@ -417,61 +503,110 @@
         <!-- Page Container -->
         <div class="page-container">
             
-            <!-- PAGE 1: OVERVIEW / DASHBOARD -->
-            <div id="overview" class="page active">
-                <div class="dashboard-grid">
-                    <div>
-                        <div class="card" style="margin-bottom: 30px;">
-                            <div class="card-title"><i class="fa-solid fa-satellite-dish"></i> Live System Data</div>
-                            <div class="data-row">
-                                <span>Water Level (Component 1)</span>
-                                <span class="data-value">18.4 cm</span>
-                            </div>
-                            <div class="data-row">
-                                <span>Reservoir Status (Component 2)</span>
-                                <span class="data-value safe">NORMAL</span>
-                            </div>
-                        </div>
-                        
-                        <div id="overview-route" class="card" style="display:none; margin-bottom: 30px;"></div>
+<!-- PAGE 1: OVERVIEW / DASHBOARD -->
+<div id="overview" class="page active">
+  <div class="ov-wrap">
 
-                        <div id="overview-alert" class="alert-card">
-                            <div class="alert-icon" id="alert-icon"><i class="fa-solid fa-circle-info"></i></div>
-                            <div class="alert-content">
-                                <h3 id="alert-title">STATUS</h3>
-                                <p id="alert-message">Click on the map or use GPS to get your current alert status.</p>
-                            </div>
-                        </div>
-                    </div>
+    <!-- HERO -->
+    <section class="ov-hero">
+      <svg viewBox="0 0 1200 260" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <defs><linearGradient id="ovRiv" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#5fb0f5"/><stop offset="1" stop-color="#0056b3"/></linearGradient></defs>
+        <circle cx="1010" cy="62" r="30" fill="#fff6d6"/>
+        <g fill="#fff" opacity=".9"><ellipse cx="760" cy="55" rx="55" ry="14"/><ellipse cx="800" cy="46" rx="35" ry="12"/><ellipse cx="1120" cy="110" rx="48" ry="12"/></g>
+        <path d="M0 170 Q150 90 300 150 T620 130 T900 140 T1200 100 V260 H0Z" fill="#cfe6d6"/>
+        <path d="M0 195 Q200 140 420 180 T820 170 T1200 150 V260 H0Z" fill="#a9d3b8"/>
+        <g fill="#fff" stroke="#9db8cf" stroke-width="1.5"><rect x="880" y="150" width="34" height="24"/><rect x="930" y="156" width="28" height="20"/><rect x="990" y="146" width="36" height="26"/></g>
+        <g fill="#e07a5f"><path d="M876 150 l21-14 21 14z"/><path d="M926 156 l18-12 18 12z"/><path d="M986 146 l22-15 22 15z"/></g>
+        <g class="ov-wv2"><path d="M-200 214 Q-150 200 -100 214 T0 214 T100 214 T200 214 T300 214 T400 214 T500 214 T600 214 T700 214 T800 214 T900 214 T1000 214 T1100 214 T1200 214 T1300 214 V260 H-200Z" fill="#7fbdf2" opacity=".6"/></g>
+        <g class="ov-wv1"><path d="M-200 228 Q-150 214 -100 228 T0 228 T100 228 T200 228 T300 228 T400 228 T500 228 T600 228 T700 228 T800 228 T900 228 T1000 228 T1100 228 T1200 228 T1300 228 V260 H-200Z" fill="url(#ovRiv)"/></g>
+      </svg>
+      <div class="ov-hero-text">
+        <h1>Know your flood risk.<br>Get to safety faster.</h1>
+        <p>Live river and reservoir readings for the Kelani basin, with a safe road route to the nearest open shelter.</p>
+      </div>
+    </section>
 
-                    <div>
-                        <div class="card">
-                            <div class="card-title"><i class="fa-solid fa-bolt"></i> Quick Actions</div>
-                            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;">Find your risk level and the nearest suitable shelter instantly using your live location or by clicking the map.</p>
-                            <div style="display: flex; flex-direction: column; gap: 15px;">
-                                <button class="btn btn-primary" onclick="useGps()" id="gps-btn"><i class="fa-solid fa-location-dot"></i> Use My GPS Location</button>
-                                <button class="btn btn-outline" onclick="switchPage('map-view')"><i class="fa-solid fa-map"></i> Open Live Map View</button>
-                                <button class="btn btn-outline" onclick="switchPage('saferoute')"><i class="fa-solid fa-route"></i> Safe Route Analysis</button>
-                            </div>
-                        </div>
+    <!-- SENSOR DATA -->
+    <div class="ov-sec">
+      <h2>Conditions around you</h2>
+      <div class="ov-live"><span class="ov-dot" id="ov-live-dot"></span><span id="ov-live-text">Connecting…</span></div>
+    </div>
+    
+    <!-- UPDATED: Added Flow Rate and Rate of Rise cards -->
+    <div class="ov-grid3">
+      <div class="ov-card">
+        <div class="ov-ct"><i class="fa-solid fa-ruler-vertical"></i> River water level</div>
+        <div class="ov-big"><span id="ov-wl">--</span><small>cm</small></div>
+        <div class="ov-tank"><div id="ov-wl-bar"></div></div>
+        <div class="ov-ticks"><span>0</span><span>50</span><span>100 cm</span></div>
+      </div>
+      
+      <div class="ov-card">
+        <div class="ov-ct"><i class="fa-solid fa-cloud-rain"></i> Rainfall</div>
+        <div class="ov-rain-ico" id="ov-rain-ico">…</div>
+        <div class="ov-rain-t" id="ov-rain-t">--</div>
+        <div class="ov-sub" id="ov-rain-sub">Waiting for sensor data</div>
+      </div>
 
-                        <div class="card" style="margin-top: 20px;">
-                            <div class="card-title"><i class="fa-solid fa-flask"></i> Demo Scenarios</div>
-                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                                <button class="btn btn-outline" onclick="setPreset(6.935, 79.885, 'Inside Kolonnawa (HIGH)')">Inside High Risk</button>
-                                <button class="btn btn-outline" onclick="setPreset(6.935, 79.9045, '500 m from Kolonnawa')">Near High Risk</button>
-                                <button class="btn btn-outline" onclick="setPreset(6.960, 79.925, 'Inside Kelaniya (MEDIUM)')">Inside Medium Risk</button>
-                                <button class="btn btn-outline" onclick="setPreset(6.890, 79.840, 'Outside all zones')">Safe Zone</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div class="ov-card">
+        <div class="ov-ct"><i class="fa-solid fa-droplet"></i> Flow Rate</div>
+        <div class="ov-big"><span id="ov-flow-rate">--</span><small>L/min</small></div>
+        <div class="ov-sub">Total Volume: <b id="ov-flow-total">--</b> L</div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-ct"><i class="fa-solid fa-arrow-trend-up"></i> Rate of Rise</div>
+        <div class="ov-big" style="font-size: 2.2rem;"><span id="ov-ror">--</span><small>cm/m</small></div>
+        <div class="ov-sub" style="margin-top: 12px;">
+            Trend: <b id="ov-trend" style="font-size: 0.9rem; padding: 4px 10px; border-radius: 6px; background: #eee;">--</b>
+        </div>
+      </div>
+
+      <div class="ov-card">
+        <div class="ov-ct"><i class="fa-solid fa-tower-broadcast"></i> Sensor station</div>
+        <div class="ov-row"><span>Station</span><b id="ov-st-id">--</b></div>
+        <div class="ov-row"><span>Location</span><b id="ov-st-loc">--</b></div>
+        <div class="ov-row"><span>Last update</span><b id="ov-st-time">--</b></div>
+        <div class="ov-row"><span>Status</span><b><span class="ov-pill off" id="ov-st-pill">--</span></b></div>
+      </div>
+    </div>
+
+    <!-- RESERVOIR + YOUR RISK -->
+    <div class="ov-sec"><h2>Reservoir and your risk</h2></div>
+    <div class="ov-grid2">
+      <div class="ov-card">
+        <div class="ov-ct"><i class="fa-solid fa-dam"></i> Reservoir status</div>
+        <div class="ov-res NORMAL" id="ov-res">
+          <div class="ov-res-ico"><i class="fa-solid fa-water" id="ov-res-i"></i></div>
+          <div style="flex:1">
+            <div class="ov-res-name" id="ov-res-name">--</div>
+            <div class="ov-res-state" id="ov-res-state">--</div>
+            <div class="ov-sub" id="ov-res-msg" style="margin-top:0"></div>
+          </div>
+        </div>
+        <div class="ov-res-bar"><i></i><i></i><i></i></div>
+        <div class="ov-res-lbl"><span>Normal</span><span>Warning (pre-spill)</span><span>Critical (spilling)</span></div>
+      </div>
+
+      <div>
+        <div id="overview-route" class="ov-card" style="display:none; margin-bottom: 20px;"></div>
+
+        <div id="overview-alert" class="alert-card">
+          <div class="alert-icon" id="alert-icon"><i class="fa-solid fa-circle-info"></i></div>
+          <div class="alert-content">
+            <h3 id="alert-title">STATUS</h3>
+            <p id="alert-message">Click on the map or use GPS to get your current alert status.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
 
             <!-- PAGE 2: MAP -->
             <div id="map-view" class="page" style="padding: 0; position: relative;">
-                <aside class="map-side-panel">
-                    <div class="map-side-spacer"></div>
+                <aside class="map-side-panel" style="background: transparent; border-right: none; padding: 0; justify-content: flex-start; padding-top: 20px;">
                     <div id="map-alert" class="map-alert">
                         <div id="map-alert-icon" style="font-size: 1.8rem;"></div>
                         <div>
@@ -479,7 +614,7 @@
                             <p id="map-alert-message">Select your location on the map or use GPS to view your flood-risk advisory.</p>
                         </div>
                     </div>
-                    <div class="map-legend">
+                    <div class="map-legend" style="margin: 0 18px 18px 18px;">
                         <div class="rp-title" style="margin-top:0">Map Legend</div>
                         <div class="lg-row"><i style="border-top:5px solid #1e9e55"></i> Safe road route (outside flood zones)</div>
                         <div class="lg-row"><i style="border-top:5px solid #dc2626"></i> Route section inside a flood zone</div>
@@ -498,7 +633,7 @@
             
             <!-- PAGE 3: SHELTERS -->
             <div id="shelters" class="page">
-                <div class="shelter-grid" id="shelter-list">
+                <div id="shelter-list">
                     <div style="text-align: center; width: 100%; padding: 50px; color: var(--text-muted);">
                         <i class="fa-solid fa-map-location-dot" style="font-size: 3rem; color: var(--border-color); margin-bottom: 20px;"></i>
                         <h3>No Location Selected</h3>
@@ -518,25 +653,14 @@
 
                     <!-- ROUTE TO NEAREST SHELTER (moved from Live Map) -->
                     <div class="card sr-card">
-                        <div class="card-title"><i class="fa-solid fa-route"></i> Your safe route to the nearest shelter</div>
+                        <div class="card-title"><i class="fa-solid fa-route"></i> Safe route to the nearest shelter</div>
                         <div id="rp-body"></div>
                     </div>
 
                     <!-- 1. COMPARISON -->
                     <div class="card sr-card">
-                        <div class="card-title"><i class="fa-solid fa-code-compare"></i> 1. Route comparison (live demo)</div>
-                        <div class="sr-btnrow">
-                            <span class="sr-label">Scenario:</span>
-                            <button class="btn btn-outline sr-btn" onclick="runScenario(0)">Inside High Risk</button>
-                            <button class="btn btn-outline sr-btn" onclick="runScenario(1)">Near High Risk</button>
-                            <button class="btn btn-outline sr-btn" onclick="runScenario(2)">Inside Medium Risk</button>
-                            <button class="btn btn-outline sr-btn" onclick="runScenario(3)">Safe Zone</button>
-                            <span class="sr-mode">
-                                <button class="mode-btn active" id="sr-mode-walk" onclick="setSrMode('walk')"><i class="fa-solid fa-person-walking"></i> Walk</button>
-                                <button class="mode-btn" id="sr-mode-drive" onclick="setSrMode('drive')"><i class="fa-solid fa-car"></i> Drive</button>
-                            </span>
-                        </div>
-                        <div class="sr-note" style="margin:-4px 0 12px;">Or click anywhere on the map below to use that point as the starting location. The destination is the shelter recommended by the system.</div>
+                        <div class="card-title"><i class="fa-solid fa-code-compare"></i> Route comparison</div>
+                        <div class="sr-note" style="margin:-4px 0 12px;">Click anywhere on the map below to use that point as the starting location. The destination is the shelter recommended by the system.</div>
                         <div id="sr-map"></div>
                         <div class="sr-legend">
                             <span><i style="border-top:3px dashed #64748b"></i>Straight line (not a road)</span>
@@ -544,7 +668,7 @@
                             <span><i style="border-top:4px solid #1e9e55"></i>KelaniFlood safe route</span>
                             <span><i style="border-top:4px solid #dc2626"></i>Part inside a flood zone</span>
                         </div>
-                        <div id="sr-results"><div class="sr-status">Pick a scenario above to compare the routes.</div></div>
+                        <div id="sr-results"><div class="sr-status">Click on the map above to compare routes.</div></div>
                     </div>
 
                 </div>
@@ -629,8 +753,6 @@
                 const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19, attribution: '&copy; OpenStreetMap contributors'
                 });
-                // Backup basemap: used automatically if OpenStreetMap blocks the tiles
-                // (happens when the page is opened as a local file, with no Referer header)
                 const carto = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
                     maxZoom: 19, subdomains: 'abcd',
                     attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
@@ -705,7 +827,6 @@
             }
         }
 
-        // Flood zones are kept in memory so routes can be checked against them
         let floodZones = [], zonesFetch = null;
         let zonesReady = Promise.resolve();
 
@@ -831,7 +952,6 @@
             );
         }
 
-        // --- PRESETS LOGIC ---
         function setPreset(lat, lon, name) {
             switchPage('map-view');
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -854,23 +974,16 @@
         }
 
         /* =====================================================================
-           SAFE ROUTING  (real roads, avoids flood zones)
-           ---------------------------------------------------------------------
-           1. Ask OSRM for the normal route + alternatives.
-           2. Check every route against the flood-zone polygons.
-           3. If none is clear, try detour via-points (left/right of the straight
-              line) and check those routes too.
-           4. Pick the route with the least flood exposure (then the fastest).
+           SAFE ROUTING
         ===================================================================== */
         const RISK_W = { HIGH: 3, MEDIUM: 1.5, LOW: 0.5 };
         const RISK_COLOR = { HIGH: '#dc2626', MEDIUM: '#f97316', LOW: '#eab308' };
         const ROUTE_OK_COLOR = '#1e9e55';
         let lastDest = null, routeMode = 'walk', routeReqId = 0;
-        let shelterTargets = [];          // shelters from the last search (for buttons)
+        let shelterTargets = [];
         let lastRouteResult = null;
-        let routeState = null;            // { result, dest, selected } of the route shown in the panel
+        let routeState = null;
 
-        // ---------- geometry helpers ----------
         function polysOf(geom) {
             if (!geom) return [];
             switch (geom.type) {
@@ -895,7 +1008,6 @@
             for (let k = 1; k < poly.length; k++) if (ringContains(poly[k], x, y)) return false;
             return true;
         }
-        // returns the highest-risk zone that contains the point (or null)
         function zoneAt(lon, lat) {
             let best = null;
             for (const z of floodZones) {
@@ -908,7 +1020,7 @@
             }
             return best;
         }
-        function haversine(a, b) { // a,b = [lon,lat] -> metres
+        function haversine(a, b) {
             const R = 6371000, rad = Math.PI / 180;
             const dLat = (b[1] - a[1]) * rad, dLon = (b[0] - a[0]) * rad;
             const s = Math.sin(dLat / 2) ** 2 + Math.cos(a[1] * rad) * Math.cos(b[1] * rad) * Math.sin(dLon / 2) ** 2;
@@ -942,7 +1054,6 @@
                      floodM: m.HIGH + m.MEDIUM + m.LOW, startInZone: !!startZone };
         }
 
-        // ---------- routing requests ----------
         async function osrm(profile, latlngs, alternatives) {
             const base = profile === 'walk'
                 ? 'https://routing.openstreetmap.de/routed-foot/route/v1/driving/'
@@ -963,20 +1074,20 @@
             }
         }
 
-        function detourPoints(start, dest) { // start/dest = [lat,lon]
+        function detourPoints(start, dest) {
             const midLat = (start[0] + dest[0]) / 2, midLon = (start[1] + dest[1]) / 2;
             const cosLat = Math.cos(midLat * Math.PI / 180);
             const dy = (dest[0] - start[0]) * 111320;
             const dx = (dest[1] - start[1]) * 111320 * cosLat;
             const dist = Math.hypot(dx, dy) || 1;
-            const px = -dy / dist, py = dx / dist; // perpendicular unit vector (metres)
+            const px = -dy / dist, py = dx / dist;
             const out = [];
             [0.35, 0.7, 1.1].forEach(f => {
                 const off = Math.min(3500, Math.max(300, dist * f));
                 [1, -1].forEach(side => {
                     const lat = midLat + (py * off * side) / 111320;
                     const lon = midLon + (px * off * side) / (111320 * cosLat);
-                    if (!zoneAt(lon, lat)) out.push([lat, lon]);   // via-point itself must be dry
+                    if (!zoneAt(lon, lat)) out.push([lat, lon]);
                 });
             });
             return out;
@@ -987,7 +1098,7 @@
             if (!cands.length) return null;
 
             let evals = cands.map(r => ({ route: r, ev: evaluateRoute(r) }));
-            const baseline = evals[0];   // OSRM's normal (shortest) route, kept for comparison
+            const baseline = evals[0];
             let usedDetour = false;
 
             if (!evals.some(e => e.ev.exposure === 0)) {
@@ -997,7 +1108,6 @@
                 usedDetour = true;
             }
 
-            // remove duplicates (same length + time)
             const seen = new Set();
             evals = evals.filter(e => {
                 const key = Math.round(e.route.distance / 20) + '-' + Math.round(e.route.duration / 10);
@@ -1006,7 +1116,6 @@
                 return true;
             });
 
-            // flood exposure matters far more than a few extra minutes
             const score = e => e.ev.exposure * 20 + e.route.duration;
             evals.sort((a, b) => score(a) - score(b));
 
@@ -1018,7 +1127,6 @@
             return { best, baseline, all: evals, others: evals.slice(1), fastest, status, usedDetour, mode: profile };
         }
 
-        // ---------- formatting ----------
         function fmtDist(m) { return m < 1000 ? Math.round(m) + ' m' : (m / 1000).toFixed(1) + ' km'; }
         function fmtTime(s) {
             const min = Math.max(1, Math.round(s / 60));
@@ -1032,7 +1140,6 @@
             return '<div class="route-chip chip-danger"><i class="fa-solid fa-triangle-exclamation"></i> No fully safe route &ndash; least flooded shown</div>';
         }
 
-        // ---------- status helpers ----------
         function statusOf(ev) {
             if (ev.exposure === 0) return 'safe';
             return ev.high > 0 ? 'danger' : 'caution';
@@ -1048,7 +1155,6 @@
             return `About ${fmtDist(ev.high)} of this route is inside a HIGH risk flood zone (red on the map). This is the least flooded road route available. Never drive or walk through floodwater.`;
         }
 
-        // ---------- map drawing ----------
         function clearRouteLayers() {
             routeLayers.forEach(l => { if (map && map.hasLayer(l)) map.removeLayer(l); });
             routeLayers = [];
@@ -1057,7 +1163,6 @@
         function drawRoute(result, dest, start, selIdx, fit) {
             const group = L.layerGroup();
 
-            // other options: grey dashed, click to choose
             result.all.forEach((e, i) => {
                 if (i === selIdx || i > 3) return;
                 const ll = e.route.geometry.coordinates.map(c => [c[1], c[0]]);
@@ -1112,7 +1217,6 @@
             map.fitBounds(L.latLngBounds([[start.lat, start.lng], [dest.lat, dest.lon]]), { padding: [60, 60] });
         }
 
-        // ---------- turn-by-turn ----------
         const TURN_TEXT = {
             'left': 'Turn left', 'right': 'Turn right', 'slight left': 'Bear left', 'slight right': 'Bear right',
             'sharp left': 'Turn sharp left', 'sharp right': 'Turn sharp right', 'straight': 'Continue straight', 'uturn': 'Make a U-turn'
@@ -1148,7 +1252,6 @@
             </details>`;
         }
 
-        // ---------- the docked Safe Route panel ----------
         function modeToggleHtml() {
             return `<div class="mode-toggle">
                 <button class="mode-btn ${routeMode === 'walk' ? 'active' : ''}" onclick="setRouteMode('walk')"><i class="fa-solid fa-person-walking"></i> Walk</button>
@@ -1225,14 +1328,12 @@
                 return;
             }
 
-            // idle
             el.innerHTML = `<div class="rp-banner rp-info"><i class="fa-solid fa-circle-info"></i>
                 <div><strong>No route yet</strong>
                 <span>Go to the Live Map, set your location (click the map or use GPS) and press &quot;Find Nearest suitable shelter&quot;. The route details will appear here.</span></div></div>
                 <button class="btn btn-outline rp-btn" onclick="switchPage('map-view')"><i class="fa-solid fa-map"></i> Open Live Map</button>`;
         }
 
-        // ---------- Overview page summary card ----------
         function updateOverviewRoute() {
             const el = document.getElementById('overview-route');
             if (!el) return;
@@ -1251,8 +1352,7 @@
                 <button class="btn btn-outline" style="width:100%;margin-top:14px;" onclick="switchPage('map-view')"><i class="fa-solid fa-map"></i> Open route on map</button>`;
         }
 
-        // ---------- actions ----------
-        function hideRouteCard() {          // called when the location changes
+        function hideRouteCard() {
             routeState = null;
             renderRoutePanel('idle');
             updateOverviewRoute();
@@ -1279,7 +1379,6 @@
             updateOverviewRoute();
         }
 
-        // ---------- main entry ----------
         async function showRouteTo(dest) {
             if (!userMarker || !map || !dest) return null;
             lastDest = dest;
@@ -1293,7 +1392,7 @@
             await zonesReady;
 
             const result = await computeSafeRoute([start.lat, start.lng], [dest.lat, dest.lon], routeMode);
-            if (reqId !== routeReqId) return null;   // a newer request replaced this one
+            if (reqId !== routeReqId) return null;
 
             lastRouteResult = result;
             if (!result) {
@@ -1308,7 +1407,6 @@
             return result;
         }
 
-        // Google Maps link that follows OUR chosen route (via a few waypoints)
         function gmapsSafeUrl(dest, entry) {
             const mode = routeMode === 'walk' ? 'walking' : 'driving';
             let url = `https://www.google.com/maps/dir/?api=1&destination=${dest.lat},${dest.lon}&travelmode=${mode}`;
@@ -1366,10 +1464,8 @@
                 shelterTargets = [{ lat: s.lat, lon: s.lon, name: s.name }];
                 (res.alternatives || []).forEach(alt => shelterTargets.push({ lat: alt.shelter.lat, lon: alt.shelter.lon, name: alt.shelter.name }));
 
-                // Real road route to the recommended shelter (drawn on the map)
                 const route = await showRouteTo(shelterTargets[0]);
                 if (!route) {
-                    // routing service down -> keep old straight-line behaviour as fallback
                     clearRouteLayers();
                     drawStraightFallback(shelterTargets[0], userMarker.getLatLng(), res.recommended.crosses_flood_zone);
                 }
@@ -1378,86 +1474,82 @@
                 const timeText = route ? fmtTime(route.best.route.duration) : res.recommended.eta_min + ' min';
                 const timeLabel = route ? (routeMode === 'walk' ? 'Walk time' : 'Drive time') : 'ETA';
                 
-                // ---- Recommended shelter: its own highlighted section ----
-                let html = `
-                    <div class="rec-section">
-                        <div class="sec-title"><i class="fa-solid fa-star"></i> Recommended shelter</div>
-                        <div class="shelter-item" style="border: 2px solid var(--safe);">
-                            <span class="shelter-badge badge-recommended">Nearest suitable shelter</span>
-                            <div class="shelter-icon-placeholder" style="background: var(--safe-bg);">
-                                <i class="fa-solid fa-building-shield" style="color: var(--safe); opacity: .7;"></i>
+                // Build all shelters list - recommended first, then alternatives
+                let allSheltersHtml = '';
+                
+                // Recommended shelter card
+                allSheltersHtml += `
+                    <div class="shelter-item" style="border: 2px solid var(--safe);">
+                        <span class="shelter-badge badge-recommended">Nearest suitable shelter</span>
+                        <div class="shelter-icon-placeholder" style="background: var(--safe-bg);">
+                            <i class="fa-solid fa-building-shield" style="color: var(--safe); opacity: .7;"></i>
+                        </div>
+                        <div class="shelter-content">
+                            <h4>${safeText(s.name)}</h4>
+                            ${routeChipHtml(route)}
+                            <p>${safeText(res.message)}</p>
+                            
+                            <div class="facilities">
+                                ${getFacilities().map(f => getFacilityIcon(f)).join('')}
                             </div>
-                            <div class="shelter-content">
-                                <h4>${safeText(s.name)}</h4>
-                                ${routeChipHtml(route)}
-                                <p>${safeText(res.message)}</p>
-                                
-                                <div class="facilities">
-                                    ${getFacilities().map(f => getFacilityIcon(f)).join('')}
-                                </div>
 
-                                <div class="availability-bar-container">
-                                    <div class="availability-bar" style="width: ${capacityPercentage}%;"></div>
-                                </div>
-                                <span class="availability-text">${res.recommended.free_places} of ${s.capacity} spaces available</span>
-
-                                <div class="shelter-stats">
-                                    <div class="stat-box"><span class="label">Road distance</span><span class="value">${distText}</span></div>
-                                    <div class="stat-box"><span class="label">${timeLabel}</span><span class="value">${timeText}</span></div>
-                                </div>
-                                
-                                <button class="btn-showmap" onclick="goToRoute(0)">
-                                    <i class="fa-solid fa-route"></i> Show safe route on map
-                                </button>
-                                <button class="btn-navigate" onclick="openSafeNav(0)">
-                                    <i class="fa-solid fa-diamond-turn-right"></i> Navigate via Google Maps
-                                </button>
+                            <div class="availability-bar-container">
+                                <div class="availability-bar" style="width: ${capacityPercentage}%;"></div>
                             </div>
+                            <span class="availability-text">${res.recommended.free_places} of ${s.capacity} spaces available</span>
+
+                            <div class="shelter-stats">
+                                <div class="stat-box"><span class="label">Road distance</span><span class="value">${distText}</span></div>
+                                <div class="stat-box"><span class="label">${timeLabel}</span><span class="value">${timeText}</span></div>
+                            </div>
+                            
+                            <button class="btn-showmap" onclick="goToRoute(0)">
+                                <i class="fa-solid fa-route"></i> Show safe route on map
+                            </button>
+                            <button class="btn-navigate" onclick="openSafeNav(0)">
+                                <i class="fa-solid fa-diamond-turn-right"></i> Navigate via Google Maps
+                            </button>
                         </div>
                     </div>
                 `;
                 
-                // ---- Alternatives: separate section below ----
-                if ((res.alternatives || []).length > 0) {
-                    html += `<div class="sec-title"><i class="fa-solid fa-layer-group"></i> Alternatives</div><div class="alt-grid">`;
-                    res.alternatives.forEach((alt, idx) => {
-                        const altCapacity = Math.round((alt.free_places / alt.shelter.capacity) * 100);
-                        html += `
-                            <div class="shelter-item">
-                                <span class="shelter-badge badge-alt">Alternative</span>
-                                <div class="shelter-icon-placeholder" style="background: var(--bg-grey);">
-                                    <i class="fa-solid fa-building-shield" style="color: var(--text-muted);"></i>
-                                </div>
-                                <div class="shelter-content">
-                                    <h4>${safeText(alt.shelter.name)}</h4>
-                                    <p>Alternative safe location nearby.</p>
-
-                                    <div class="availability-bar-container">
-                                        <div class="availability-bar" style="width: ${altCapacity}%;"></div>
-                                    </div>
-                                    <span class="availability-text">${alt.free_places} of ${alt.shelter.capacity} spaces available</span>
-
-                                    <div class="shelter-stats">
-                                        <div class="stat-box"><span class="label">Straight-line</span><span class="value">${alt.distance_m} m</span></div>
-                                        <div class="stat-box"><span class="label">Free Space</span><span class="value">${alt.free_places}</span></div>
-                                    </div>
-                                    
-                                    <button class="btn-showmap" onclick="goToRoute(${idx + 1})">
-                                        <i class="fa-solid fa-route"></i> Show safe route on map
-                                    </button>
-                                    <button class="btn-navigate" onclick="openSafeNav(${idx + 1})">
-                                        <i class="fa-solid fa-diamond-turn-right"></i> Navigate
-                                    </button>
-                                </div>
+                // Alternative shelters
+                (res.alternatives || []).forEach((alt, idx) => {
+                    const altCapacity = Math.round((alt.free_places / alt.shelter.capacity) * 100);
+                    allSheltersHtml += `
+                        <div class="shelter-item">
+                            <span class="shelter-badge badge-alt">Alternative</span>
+                            <div class="shelter-icon-placeholder" style="background: var(--bg-grey);">
+                                <i class="fa-solid fa-building-shield" style="color: var(--text-muted);"></i>
                             </div>
-                        `;
-                    });
-                    html += `</div>`;
-                }
-                shelterList.innerHTML = html;
+                            <div class="shelter-content">
+                                <h4>${safeText(alt.shelter.name)}</h4>
+                                <p>Alternative safe location nearby.</p>
 
-                // Stay on the map when the safe route was drawn so the user can see it;
-                // the shelter details are one click away in the "Shelters" tab.
+                                <div class="availability-bar-container">
+                                    <div class="availability-bar" style="width: ${altCapacity}%;"></div>
+                                </div>
+                                <span class="availability-text">${alt.free_places} of ${alt.shelter.capacity} spaces available</span>
+
+                                <div class="shelter-stats">
+                                    <div class="stat-box"><span class="label">Straight-line</span><span class="value">${alt.distance_m} m</span></div>
+                                    <div class="stat-box"><span class="label">Free Space</span><span class="value">${alt.free_places}</span></div>
+                                </div>
+                                
+                                <button class="btn-showmap" onclick="goToRoute(${idx + 1})">
+                                    <i class="fa-solid fa-route"></i> Show safe route on map
+                                </button>
+                                <button class="btn-navigate" onclick="openSafeNav(${idx + 1})">
+                                    <i class="fa-solid fa-diamond-turn-right"></i> Navigate
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                // Wrap all in a grid
+                shelterList.innerHTML = `<div class="all-shelters-grid">${allSheltersHtml}</div>`;
+
                 if (!route) switchPage('shelters');
 
             } else {
@@ -1525,12 +1617,9 @@
 
         function setSrMode(mode) {
             routeMode = mode;
-            document.getElementById('sr-mode-walk').classList.toggle('active', mode === 'walk');
-            document.getElementById('sr-mode-drive').classList.toggle('active', mode === 'drive');
             if (srLast) runScenarioAt(srLast.origin, srLast.label);
         }
 
-        // nearest shelter that is not itself inside a flood zone (straight-line distance)
         function pickShelterLocal(origin) {
             let list = allShelters.filter(s => !zoneAt(s.lon, s.lat));
             if (!list.length) list = allShelters;
@@ -1542,7 +1631,7 @@
             return best;
         }
 
-        function straightEval(a, b) { // a,b = [lat,lon]
+        function straightEval(a, b) {
             return evaluateRoute({ geometry: { coordinates: [[a[1], a[0]], [b[1], b[0]]] } });
         }
 
@@ -1609,7 +1698,6 @@
             const sEv = straightEval(origin, [dest.lat, dest.lon]);
             const straightDist = haversine([origin[1], origin[0]], [dest.lon, dest.lat]);
 
-            // ----- map -----
             const group = L.layerGroup();
             L.polyline([origin, [dest.lat, dest.lon]], { color: '#64748b', weight: 3, dashArray: '8 8', opacity: .9 }).addTo(group);
             if (!same) {
@@ -1624,7 +1712,6 @@
             srLayers.push(group);
             map2.fitBounds(L.latLngBounds([origin, [dest.lat, dest.lon], ...safe.route.geometry.coordinates.map(c => [c[1], c[0]])]), { padding: [40, 40] });
 
-            // ----- table -----
             const fz = m => m > 0 ? `<span class="v-bad">${fmtDist(m)}</span>` : `<span class="v-good">0 m</span>`;
             const verdict = e => e.ev.exposure === 0 ? '<span class="v-good">Safe</span>'
                               : e.ev.high > 0 ? '<span class="v-bad">Danger</span>' : '<span class="v-mid">Caution</span>';
@@ -1664,6 +1751,130 @@
                 </table></div>
                 <div class="sr-headline ${cls}">${headline}</div>${startNote}`;
         }
+
+        // ===================================================================
+        // OVERVIEW: live sensor + reservoir data (UPDATED FOR YOUR PAYLOAD)
+        // ===================================================================
+        const SENSOR_URL = 'http://192.168.1.4:8000/api/latest';
+        const OFFLINE_AFTER_MIN = 10;
+        const MAX_LEVEL_CM = 100;
+        const ovEl = id => document.getElementById(id);
+        let ovLastTs = null;
+
+        function ovAgo(ts) {
+            const m = Math.floor((Date.now() - ts) / 60000);
+            if (m < 1) return 'Just now';
+            if (m < 60) return m + ' min ago';
+            const h = Math.floor(m / 60);
+            return h < 24 ? h + ' h ago' : Math.floor(h / 24) + ' d ago';
+        }
+
+        function ovRenderFreshness() {
+            if (!ovLastTs) return;
+            const off = (Date.now() - ovLastTs) / 60000 > OFFLINE_AFTER_MIN;
+            ovEl('ov-st-time').textContent = 'Updated ' + ovAgo(ovLastTs);
+            ovEl('ov-live-dot').classList.toggle('off', off);
+            ovEl('ov-live-text').textContent = off ? 'Sensor offline · ' + ovAgo(ovLastTs) : 'Live · updated ' + ovAgo(ovLastTs);
+            const p = ovEl('ov-st-pill');
+            p.className = 'ov-pill ' + (off ? 'off' : 'ok');
+            p.innerHTML = off ? '<i class="fa-solid fa-plug-circle-xmark"></i> Offline'
+                              : '<i class="fa-solid fa-circle-check"></i> Online';
+        }
+
+        const OV_RES = {
+            NORMAL:   { label: 'Normal',   icon: 'fa-water',                msg: 'Water is at a safe level. No spill expected.' },
+            WARNING:  { label: 'Warning',  icon: 'fa-triangle-exclamation', msg: 'Level is close to the spill point. Stay alert.' },
+            CRITICAL: { label: 'Critical', icon: 'fa-circle-exclamation',   msg: 'Reservoir is spilling. Downstream flooding is likely.' }
+        };
+
+        function ovUpdateReservoir(r) {
+            const key = OV_RES[String(r.status).toUpperCase()] ? String(r.status).toUpperCase() : 'NORMAL';
+            const m = OV_RES[key];
+            ovEl('ov-res').className = 'ov-res ' + key;
+            ovEl('ov-res-i').className = 'fa-solid ' + m.icon;
+            ovEl('ov-res-name').textContent = r.name || '--';
+            ovEl('ov-res-state').textContent = m.label;
+            ovEl('ov-res-msg').textContent = m.msg;
+        }
+
+        function updateOverview(d) {
+            // ඔබේ API එකෙන් එන JSON Format එකට අනුව ඩේටා ලබා ගැනීම
+            const sensor = d.sensor_data || {};
+            const ror = d.rate_of_rise || {};
+
+            // 1. Water Level එක වෙනස් කිරීම
+            const wl = Number(sensor.water_level_cm);
+            if (isFinite(wl)) {
+                ovEl('ov-wl').textContent = wl.toFixed(1);
+                ovEl('ov-wl-bar').style.width = Math.max(2, Math.min(100, wl / MAX_LEVEL_CM * 100)) + '%';
+            }
+
+            // 2. Rain Status එක වෙනස් කිරීම (ඔබේ එකේ WET/DRY/LIGHT තියෙන නිසා)
+            const rainStat = String(sensor.rain_status || '').toUpperCase();
+            const isWet = (rainStat === 'WET' || rainStat === 'LIGHT');
+            
+            ovEl('ov-rain-ico').textContent = isWet ? '🌧️' : '☀️';
+            ovEl('ov-rain-t').textContent = isWet ? (rainStat === 'LIGHT' ? 'Light Rain' : 'Raining') : 'Clear';
+            ovEl('ov-rain-sub').textContent = isWet ? 'Rain detected at the station' : 'No rain detected';
+
+            // 3. Station Data එක වෙනස් කිරීම
+            ovEl('ov-st-id').textContent = sensor.station_id || '--';
+            ovEl('ov-st-loc').textContent = 'Kelaniya'; // ඔබේ station එකේ නම (ඔබට වෙනස් කරන්න පුළුවන්)
+            
+            // Last update time එක (ඔබේ එකේ last_updated තියෙන නිසා)
+            if (sensor.last_updated) {
+                ovLastTs = new Date(sensor.last_updated.replace(' ', 'T')).getTime() || Date.now();
+            } else {
+                ovLastTs = Date.now();
+            }
+            ovRenderFreshness();
+
+            // 4. Flow Rate සහ Total Flow
+            ovEl('ov-flow-rate').textContent = sensor.flow_rate_l_min !== undefined ? Number(sensor.flow_rate_l_min).toFixed(2) : '--';
+            ovEl('ov-flow-total').textContent = sensor.flow_total_l !== undefined ? Number(sensor.flow_total_l).toFixed(2) : '--';
+
+            // 5. Rate of Rise (RoR)
+            if (ror && ror.rate_of_rise_cm_min !== undefined) {
+                ovEl('ov-ror').textContent = (ror.rate_of_rise_cm_min > 0 ? '+' : '') + ror.rate_of_rise_cm_min.toFixed(2);
+                
+                const trendEl = ovEl('ov-trend');
+                trendEl.textContent = ror.trend;
+                
+                if (ror.trend === 'RISING') {
+                    trendEl.style.background = '#fdedec'; // රතු
+                    trendEl.style.color = '#e74c3c';
+                } else if (ror.trend === 'FALLING') {
+                    trendEl.style.background = '#fef5e7'; // තැඹිලි
+                    trendEl.style.color = '#f39c12';
+                } else {
+                    trendEl.style.background = '#eafaf1'; // කොළ
+                    trendEl.style.color = '#27ae60';
+                }
+            }
+
+            // 6. Reservoir එක (ඔබේ සෙන්සර් එකේ නැති නිසා 'NORMAL' කියලා හරි දාන්න)
+            ovUpdateReservoir({
+                name: "Kelani River",
+                status: "NORMAL"
+            });
+        }
+
+        const OV_DEMO = {
+            water_level_cm: 17.8, rain_status: 'WET', station_id: 'S01', station_name: 'Kelaniya',
+            reservoir: { name: 'Norton Bridge', status: 'NORMAL' }
+        };
+        async function ovLoadSensors() {
+            try {
+                const r = await fetch(SENSOR_URL);
+                if (!r.ok) throw new Error(r.status);
+                updateOverview(await r.json());
+            } catch (e) {
+                if (!ovLastTs) updateOverview({ ...OV_DEMO, timestamp: new Date().toISOString() });
+            }
+        }
+        ovLoadSensors();
+        setInterval(ovLoadSensors, 30000);
+        setInterval(ovRenderFreshness, 30000);
     </script>
 </body>
 </html>

@@ -16,7 +16,19 @@ def load_feed():
     return json.loads((BASE / "data" / "flood_risk_zones.json").read_text(encoding="utf-8"))
 
 
-state = {"feed": load_feed()}
+# පද්ධතියේ වත්මන් තත්වය තබා ගන්නා state එක
+state = {
+    "feed": load_feed(),
+    # Hewapaulage ගේ component එකෙන් එන අලුත්ම sensor දත්ත මෙහි ගබඩා වේ
+    "sensor_data": {
+        "station_id": "S01",
+        "station_name": "Kelaniya", # මේක අපි පසුව station ID එකට අනුව map කරගමු
+        "water_level_cm": 17.8,
+        "rain_status": "WET",
+        "timestamp": datetime.now().isoformat(),
+        "reservoir": {"name": "Norton Bridge", "status": "NORMAL"} # C4 එකෙන් එනකම් dummy data
+    }
+}
 
 
 class Location(BaseModel):
@@ -24,43 +36,88 @@ class Location(BaseModel):
     lon: float = Field(ge=-180, le=180)
 
 
+# ===================================================================
+# ZONES (C3 - Soysa ගේ component එකෙන් එන flood zones)
+# ===================================================================
 @app.get("/api/zones")
 def get_zones():
     return state["feed"]
 
 
-@app.post("/api/feed")  # the other components will POST their output here
-def ingest_feed(feed: dict):
+@app.post("/api/feed")
+def ingest_zones_feed(feed: dict):
+    """Flood risk zones update කිරීමට (C3 වෙතින්)"""
     if "zones" not in feed:
         raise HTTPException(status_code=422, detail="feed must contain 'zones'")
     state["feed"] = feed
     return {"status": "ok", "zones": len(feed["zones"])}
 
+
+# ===================================================================
+# SENSOR DATA (C1 - Hewapaulage ගේ component එකෙන් එන දත්ත)
+# ===================================================================
+@app.post("/api/sensor")
+def ingest_sensor_data(payload: dict):
+    """
+    Hewapaulage ගේ IoT sensor data එක ලබා ගන්නා endpoint එක.
+    ඔහුගේ payload එකේ තියෙන දේවල් (water_level_cm, rain_status, etc.) මෙතනට එවිය යුතුයි.
+    """
+    # අවශ්‍ය දත්ත තියෙනවද පරීක්ෂා කිරීම
+    if "water_level_cm" not in payload:
+        raise HTTPException(status_code=422, detail="Payload must contain 'water_level_cm'")
+
+    # දත්ත update කිරීම
+    state["sensor_data"].update({
+        "station_id": payload.get("station_id", state["sensor_data"]["station_id"]),
+        "water_level_cm": payload["water_level_cm"],
+        "rain_status": payload.get("rain_status", "DRY").upper(),
+        "timestamp": datetime.now().isoformat()
+    })
+    
+    return {"status": "ok", "message": "Sensor data updated successfully"}
+
+
+@app.get("/api/sensor")
+def get_latest_sensor_data():
+    """
+    Frontend (index.html) එකට අලුත්ම sensor දත්ත ලබා දෙන endpoint එක.
+    """
+    return state["sensor_data"]
+
+
+# ===================================================================
+# SHELTERS & ALERTS
+# ===================================================================
 @app.get("/api/shelters")
 def get_all_shelters():
     shelters = json.loads((BASE / "data" / "shelter_locations.json").read_text(encoding="utf-8"))
     return shelters
 
+
 @app.post("/api/alert")
 def alert(loc: Location):
     return evaluate_alert(loc.lat, loc.lon, state["feed"]["zones"])
+
+
 @app.post("/api/shelter")
 def shelter(loc: Location):
     shelters = json.loads((BASE / "data" / "shelter_locations.json").read_text(encoding="utf-8"))
     return recommend_shelter(loc.lat, loc.lon, state["feed"]["zones"], shelters)
 
 
-
-
-# In-memory storage for help requests
+# ===================================================================
+# HELP REQUESTS
+# ===================================================================
 help_requests = {}
+
 
 class HelpRequest(BaseModel):
     lat: float = Field(ge=-90, le=90)
     lon: float = Field(ge=-180, le=180)
-    help_type: str = Field(min_length=3, max_length=50)  # e.g. "Rescue", "Food"
-    urgency: str = Field(min_length=3, max_length=20)     # e.g. "High", "Medium", "Low"
-    description: str = Field(max_length=200)              # Additional details
+    help_type: str = Field(min_length=3, max_length=50)
+    urgency: str = Field(min_length=3, max_length=20)
+    description: str = Field(max_length=200)
+
 
 @app.post("/api/help")
 def create_help(req: HelpRequest):
@@ -74,9 +131,11 @@ def create_help(req: HelpRequest):
     }
     return help_requests[rid]
 
+
 @app.get("/api/help")
 def list_help():
     return list(help_requests.values())
+
 
 @app.post("/api/help/{rid}/accept")
 def accept_help(rid: str, responder: str):
@@ -86,18 +145,5 @@ def accept_help(rid: str, responder: str):
     return help_requests[rid]
 
 
-# Store the latest sensor data
-sensor_data = {"water_level_cm": 18.4, "rate_of_rise_cm_hr": 0.2, "rainfall_mm": 12.5}
-
-@app.post("/api/feed")
-def ingest_feed(feed: dict):
-    if "water_level_cm" in feed:
-        sensor_data.update(feed)
-        return {"status": "ok", "message": "Sensor data updated"}
-    raise HTTPException(status_code=422, detail="Invalid feed format")
-
-@app.get("/api/latest-sensor")
-def get_sensor_data():
-    return sensor_data
-
+# Web folder එක mount කිරීම (index.html පෙන්නන්න)
 app.mount("/", StaticFiles(directory=BASE / "web", html=True), name="web")
