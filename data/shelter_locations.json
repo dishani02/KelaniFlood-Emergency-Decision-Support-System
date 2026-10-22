@@ -8,5 +8,15 @@
   {"id": "S7", "name": "R. Premadasa Stadium (Colombo)", "lat": 6.9397, "lon": 79.8650, "capacity": 1000, "occupied": 150},
   {"id": "S8", "name": "Moragasmulla Reading Hall (Kotte)", "lat": 6.8950, "lon": 79.8900, "capacity": 150, "occupied": 20},
   {"id": "S9", "name": "Bandaranaikepura Community Hall (Kotte)", "lat": 6.8980, "lon": 79.8920, "capacity": 180, "occupied": 25},
-  {"id": "S10", "name": "H.K. Dharmadasa High School (Kelaniya)", "lat": 6.9780, "lon": 79.9100, "capacity": 300, "occupied": 45}
+  {"id": "S10", "name": "H.K. Dharmadasa High School (Kelaniya)", "lat": 6.9780, "lon": 79.9100, "capacity": 300, "occupied": 45},
+  {"id": "S11", "name": "Kaduwela Municipal Council Hall", "lat": 6.9330, "lon": 79.9840, "capacity": 400, "occupied": 70},
+  {"id": "S12", "name": "Kothalawala Maha Vidyalaya (Kaduwela)", "lat": 6.9280, "lon": 79.9720, "capacity": 300, "occupied": 45},
+  {"id": "S13", "name": "St. Anthony's Church (Wattala)", "lat": 6.9890, "lon": 79.8920, "capacity": 250, "occupied": 30},
+  {"id": "S14", "name": "Biyagama Industrial Zone Community Hall", "lat": 6.9980, "lon": 79.9650, "capacity": 350, "occupied": 60},
+  {"id": "S15", "name": "Hanwella Maha Vidyalaya", "lat": 6.9010, "lon": 80.0150, "capacity": 300, "occupied": 40},
+  {"id": "S16", "name": "Pahala Bomiriya Temple (Kaduwela)", "lat": 6.9450, "lon": 79.9950, "capacity": 200, "occupied": 25},
+  {"id": "S17", "name": "Dompe Pradeshiya Sabha Hall", "lat": 6.9520, "lon": 80.0320, "capacity": 250, "occupied": 35},
+  {"id": "S18", "name": "Mabole Community Centre (Wattala)", "lat": 6.9950, "lon": 79.9050, "capacity": 180, "occupied": 20},
+  {"id": "S19", "name": "Kelaniya University Main Hall", "lat": 6.9690, "lon": 79.9350, "capacity": 600, "occupied": 100},
+  {"id": "S20", "name": "Peliyagoda Municipal Hall", "lat": 6.9550, "lon": 79.8850, "capacity": 400, "occupied": 80}
 ]
